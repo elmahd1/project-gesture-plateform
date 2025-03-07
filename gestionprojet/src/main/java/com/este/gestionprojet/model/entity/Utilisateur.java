@@ -15,13 +15,14 @@ public class Utilisateur {
     private String prenom;
     private String email;
     private String motDePasse;
+    @Enumerated(EnumType.STRING)
     private Role role;
-    private Priorite p;
-    @ManyToMany(mappedBy = "utilisateur")
+    @ManyToMany(mappedBy = "assignes")
     private List<Tache> tachesAssignees;
     @OneToMany(mappedBy = "utilisateur")
     private List<Notification> notifications;
-
+    public Utilisateur() {
+    }
     public Utilisateur(String nom, String prenom, String email, String motDePasse, Role role) {
         this.nom = nom;
         this.prenom = prenom;
@@ -32,6 +33,10 @@ public class Utilisateur {
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNom() {

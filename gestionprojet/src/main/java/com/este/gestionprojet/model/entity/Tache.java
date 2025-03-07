@@ -21,17 +21,30 @@ public class Tache {
     private Date dateDebut;
     private Date dateFin;
     private int progression;
-    @ManyToMany(mappedBy = "tachesAssignees")
+    @ManyToMany
+    @JoinTable(
+        name = "utilisateur_tache",
+        joinColumns = @JoinColumn(name = "tache_id"),
+        inverseJoinColumns = @JoinColumn(name = "utilisateur_id")
+    )
     private List<Utilisateur> assignes;
     @OneToMany(mappedBy = "tache")
     private List<Commentaire> commentaires;
-    @OneToMany(mappedBy = "tache")
+    @ManyToMany
+    @JoinTable(
+        name = "tache_ressource",
+        joinColumns = @JoinColumn(name = "tache_id"),
+        inverseJoinColumns = @JoinColumn(name = "ressource_id")
+    )
     private List<Ressource> ressources;
     @ManyToOne
     @JoinColumn(name = "projet_id")
     private Projet projet;  
     private double cout;
     
+    public Tache() {
+    }
+
     public void modifierStatut(Statut statut) {
         this.statut = statut;
     }
@@ -133,8 +146,7 @@ public class Tache {
     }
 
     public void setUtilisateur(Utilisateur utilisateur) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setUtilisateur'");
+        assignes.add(utilisateur);
     }
     
 
@@ -147,7 +159,6 @@ public class Tache {
     }
 
     public void setProjet(Projet projet) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setProjet'");
+        this.projet = projet;
     }
 }

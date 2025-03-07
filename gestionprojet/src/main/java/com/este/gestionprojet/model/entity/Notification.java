@@ -32,12 +32,13 @@ public class Notification {
         this.referenceId = referenceId;
         this.referenceType = referenceType;
     }
+    public Notification() {
+    }
 
     public void marquerCommeLue() {
         this.lue = true;
     }
 
-    // Getters and setters for all fields
     public int getId() {
         return id;
     }

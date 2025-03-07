@@ -33,7 +33,6 @@ public class Commentaire {
         this.dateCreation = new Date();
     }
 
-    // Getters and setters for all fields
     public int getId() {
         return id;
     }

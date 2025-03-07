@@ -20,12 +20,12 @@ public class Rapport {
     @CollectionTable(name = "rapport_donnees", joinColumns = @JoinColumn(name = "rapport_id"))
     @MapKeyColumn(name = "cle")
     @Column(name = "valeur")
-    private Map<String, Object> donnees;
+    private Map<String, String> donnees;
 
     public Rapport() {
     }
 
-    public Rapport(int id, String titre, Date dateGeneration, FormatRapport format, Map<String, Object> donnees) {
+    public Rapport(int id, String titre, Date dateGeneration, FormatRapport format, Map<String, String> donnees) {
         this.id = id;
         this.titre = titre;
         this.dateGeneration = dateGeneration;
@@ -76,11 +76,11 @@ public class Rapport {
         this.format = format;
     }
 
-    public Map<String, Object> getDonnees() {
+    public Map<String, String> getDonnees() {
         return donnees;
     }
 
-    public void setDonnees(Map<String, Object> donnees) {
+    public void setDonnees(Map<String, String> donnees) {
         this.donnees = donnees;
     }
 }

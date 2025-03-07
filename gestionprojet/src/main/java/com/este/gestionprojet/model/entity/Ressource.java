@@ -21,6 +21,9 @@ public class Ressource {
     @JoinColumn(name = "projet_id")
     private Projet projet;    
 
+    public Ressource() {
+    }
+    
     public double calculerCoutTotal() {
         return tachesAssociees.stream().mapToDouble(Tache::getCout).sum();
     }

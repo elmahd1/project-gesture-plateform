@@ -10,13 +10,14 @@ import com.este.gestionprojet.model.enums.Role;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
+
 class GestionprojetApplicationTests {
 
     @Autowired
     private UtilisateurRepo utilisateurRepository;
 	Role role = Role.MEMBRE;
     @Test
-    @Transactional
+    
     void testUtilisateurDatabaseOperations() {
         // Create a new Utilisateur
         Utilisateur utilisateur = new Utilisateur("John", "Doe", "john.doe@example.com", "password", Role.MEMBRE);

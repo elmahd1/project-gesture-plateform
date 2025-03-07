@@ -22,6 +22,8 @@ public class Risque {
     @ManyToOne
     @JoinColumn(name = "projet_id")
     private Projet projet;  
+    public Risque() {
+    }
     public float calculerScore() {
         return impact.getValeur() * probabilite;
     }
@@ -85,5 +87,12 @@ public class Risque {
 
     public void setResponsable(Utilisateur responsable) {
         this.responsable = responsable;
+    }
+    public Projet getProjet() {
+        return projet;
+    }
+    
+    public void setProjet(Projet projet) {
+        this.projet = projet;
     }
 }

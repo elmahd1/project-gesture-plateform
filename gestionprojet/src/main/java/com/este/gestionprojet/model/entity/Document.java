@@ -41,7 +41,6 @@ public class Document {
         // Implementation for sharing the document with another user
     }
 
-    // Getters and setters for all fields
     public int getId() {
         return id;
     }

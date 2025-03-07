@@ -31,6 +31,8 @@ public class Projet {
     @OneToMany(mappedBy = "projet")
     private List<Risque> risques;
 
+    public Projet() {
+    }
     public void ajouterTache(Tache tache) {
         this.taches.add(tache);
         tache.setProjet(this);
@@ -57,7 +59,7 @@ public class Projet {
         // Implementation for generating project report
     }
 
-    // Getters and setters for all fields
+    
     public int getId() {
         return id;
     }

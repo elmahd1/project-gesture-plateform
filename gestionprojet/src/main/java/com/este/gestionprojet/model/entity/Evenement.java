@@ -46,7 +46,9 @@ public class Evenement {
         }
     }
 
-    // Getters and setters for all fields
+    public void ajouterParticipant(Utilisateur participant) {
+        this.participants.add(participant);
+    }
     public int getId() {
         return id;
     }
