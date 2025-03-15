@@ -19,18 +19,10 @@ class GestionprojetApplicationTests {
     @Test
     
     void testUtilisateurDatabaseOperations() {
-        // Create a new Utilisateur
+        
         Utilisateur utilisateur = new Utilisateur("John", "Doe", "john.doe@example.com", "password", Role.MEMBRE);
-		
-		
-
-        // Save the Utilisateur to the database
         utilisateur = utilisateurRepository.save(utilisateur);
-
-        // Retrieve the Utilisateur from the database
         Utilisateur foundUtilisateur = utilisateurRepository.findById(utilisateur.getId()).orElse(null);
-
-        // Verify the Utilisateur was saved and retrieved correctly
         assertThat(foundUtilisateur).isNotNull();
         assertThat(foundUtilisateur.getNom()).isEqualTo("John");
         assertThat(foundUtilisateur.getPrenom()).isEqualTo("Doe");

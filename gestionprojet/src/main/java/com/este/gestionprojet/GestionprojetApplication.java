@@ -4,10 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class GestionprojetApplication {
+public class GestionProjetApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(GestionprojetApplication.class, args);
-	}
-
+    public static void main(String[] args) {
+        SpringApplication.run(GestionProjetApplication.class, args);
+    }
 }
