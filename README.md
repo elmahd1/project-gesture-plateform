@@ -1,2 +1,2 @@
-# chess-plateform
-we are developing a chess application using java ..
+# Workflow
+we are developing a Project management tool called Workflow ..
