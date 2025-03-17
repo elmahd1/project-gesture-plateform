@@ -1,7 +1,8 @@
 package com.este.gestionprojet.service;
 
 import com.este.gestionprojet.model.entity.Rapport;
-import com.este.gestionprojet.repository.RapportRepository;
+import com.este.gestionprojet.model.entity.Utilisateur;
+import com.este.gestionprojet.repository.RapportRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +13,7 @@ import java.util.Optional;
 public class RapportService {
 
     @Autowired
-    private RapportRepository rapportRepository;
+    private RapportRepo rapportRepository;
 
     public List<Rapport> findAll() {
         return rapportRepository.findAll();

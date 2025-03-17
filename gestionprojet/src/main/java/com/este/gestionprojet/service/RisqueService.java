@@ -1,7 +1,8 @@
 package com.este.gestionprojet.service;
 
 import com.este.gestionprojet.model.entity.Risque;
-import com.este.gestionprojet.repository.RisqueRepository;
+import com.este.gestionprojet.model.enums.Statut;
+import com.este.gestionprojet.repository.RisqueRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +13,7 @@ import java.util.Optional;
 public class RisqueService {
 
     @Autowired
-    private RisqueRepository risqueRepository;
+    private RisqueRepo risqueRepository;
 
     public List<Risque> findAll() {
         return risqueRepository.findAll();

@@ -1,7 +1,8 @@
 package com.este.gestionprojet.service;
 
 import com.este.gestionprojet.model.entity.Evenement;
-import com.este.gestionprojet.repository.EvenementRepository;
+import com.este.gestionprojet.model.entity.Utilisateur;
+import com.este.gestionprojet.repository.EvenementRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +14,7 @@ import java.util.Optional;
 public class EvenementService {
 
     @Autowired
-    private EvenementRepository evenementRepository;
+    private EvenementRepo evenementRepository;
 
     public List<Evenement> findAll() {
         return evenementRepository.findAll();

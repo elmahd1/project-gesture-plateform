@@ -1,7 +1,7 @@
 package com.este.gestionprojet.service;
 
 import com.este.gestionprojet.model.entity.Ressource;
-import com.este.gestionprojet.repository.RessourceRepository;
+import com.este.gestionprojet.repository.RessourceRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +13,7 @@ import java.util.Optional;
 public class RessourceService {
 
     @Autowired
-    private RessourceRepository ressourceRepository;
+    private RessourceRepo ressourceRepository;
 
     public List<Ressource> findAll() {
         return ressourceRepository.findAll();

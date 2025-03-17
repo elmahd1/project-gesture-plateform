@@ -1,7 +1,8 @@
 package com.este.gestionprojet.service;
 
+import com.este.gestionprojet.model.entity.Tache;
 import com.este.gestionprojet.model.entity.Utilisateur;
-import com.este.gestionprojet.repository.UtilisateurRepository;
+import com.este.gestionprojet.repository.UtilisateurRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +13,7 @@ import java.util.Optional;
 public class UtilisateurService {
 
     @Autowired
-    private UtilisateurRepository utilisateurRepository;
+    private UtilisateurRepo utilisateurRepository;
 
     public List<Utilisateur> findAll() {
         return utilisateurRepository.findAll();

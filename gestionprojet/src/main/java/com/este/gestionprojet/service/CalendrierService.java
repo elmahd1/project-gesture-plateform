@@ -2,7 +2,7 @@ package com.este.gestionprojet.service;
 
 import com.este.gestionprojet.model.entity.Calendrier;
 import com.este.gestionprojet.model.entity.Evenement;
-import com.este.gestionprojet.repository.CalendrierRepository;
+import com.este.gestionprojet.repository.CalendrierRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +14,7 @@ import java.util.Optional;
 public class CalendrierService {
 
     @Autowired
-    private CalendrierRepository calendrierRepository;
+    private CalendrierRepo calendrierRepository;
 
     public List<Calendrier> findAll() {
         return calendrierRepository.findAll();

@@ -1,7 +1,7 @@
 package com.este.gestionprojet.service;
 
 import com.este.gestionprojet.model.entity.Document;
-import com.este.gestionprojet.repository.DocumentRepository;
+import com.este.gestionprojet.repository.DocumentRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +12,7 @@ import java.util.Optional;
 public class DocumentService {
 
     @Autowired
-    private DocumentRepository documentRepository;
+    private DocumentRepo documentRepository;
 
     public List<Document> findAll() {
         return documentRepository.findAll();

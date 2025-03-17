@@ -1,7 +1,7 @@
 package com.este.gestionprojet.service;
 
 import com.este.gestionprojet.model.entity.Notification;
-import com.este.gestionprojet.repository.NotificationRepository;
+import com.este.gestionprojet.repository.NotificationRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +12,7 @@ import java.util.Optional;
 public class NotificationService {
 
     @Autowired
-    private NotificationRepository notificationRepository;
+    private NotificationRepo notificationRepository;
 
     public List<Notification> findAll() {
         return notificationRepository.findAll();
