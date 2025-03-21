@@ -1,0 +1,236 @@
+<div class="landing-container">
+  <!-- Navigation -->
+  <nav class="navbar" [ngClass]="{'scrolled': isScrolled}">
+    <div class="container">
+      <div class="logo">
+
+        <h1>W o r k f l o w</h1>
+      </div>
+      <div class="nav-links">
+        <a href="#features">Fonctionnalités</a>
+        <a href="#how-it-works">Comment ça marche</a>
+        <a href="#testimonials">Témoignages</a>
+        <a href="#contact">Contact</a>
+        <button class="login-btn" routerLink="/auth/login">Connexion</button>
+        <button class="signup-btn" routerLink="/auth/register">Démarrer</button>
+      </div>
+      <div class="mobile-menu-btn" (click)="toggleMobileMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </nav>
+  <div class="mobile-menu" [ngClass]="{'open': mobileMenuOpen}">
+    <a href="#features" (click)="toggleMobileMenu()">Fonctionnalités</a>
+    <a href="#how-it-works" (click)="toggleMobileMenu()">Comment ça marche</a>      
+    <a href="#testimonials" (click)="toggleMobileMenu()">Témoignages</a>
+    <a href="#contact" (click)="toggleMobileMenu()">Contact</a>
+    <button class="login-btn" routerLink="/auth/login">Connexion</button>
+    <button class="signup-btn" routerLink="/auth/register">Démarrer</button>
+  </div>
+
+  <!-- Hero Section with Modern Design -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1>Simplifiez votre <span class="gradient-text">façon de</span> <span class="highlight-text">travailler</span></h1>
+        <p>
+          La plateforme de gestion de projet la plus intuitive pour les équipes modernes. Planifiez, suivez et livrez votre meilleur travail.
+        </p>
+        <div class="hero-buttons">
+          <button class="primary-btn" routerLink="/auth/register">Essayer Gratuitement</button>
+          <button class="secondary-btn" routerLink="/dashboard">Voir la Démo</button>
+        </div>
+        <br><br><br><br><br><br><br><br><br><br><br><br>
+        <!-- Hero Stats -->
+        <div class="hero-stats">
+          <div class="stat-item" *ngFor="let stat of heroStats">
+            <div class="stat-icon" [ngStyle]="{'background-color': stat.color}">
+              <i [class]="stat.icon"></i>
+            </div>
+            <h3>{{stat.title}}</h3>
+            <p>{{stat.description}}</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="hero-graphic">
+        <div class="dashboard-mockup">
+          <div class="mockup-header"></div>
+          <div class="mockup-sidebar"></div>
+          <div class="mockup-content">
+            <div class="mockup-widget w1"></div>
+            <div class="mockup-widget w2"></div>
+            <div class="mockup-widget w3"></div>
+            <div class="mockup-widget w4"></div>
+          </div>
+        </div>
+        <div class="decoration-circle c1"></div>
+        <div class="decoration-circle c2"></div>
+        <div class="decoration-circle c3"></div>
+      </div>
+    </div>
+    <div class="hero-wave">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+        <path fill="#ffffff" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,154.7C384,149,480,107,576,90.7C672,75,768,85,864,122.7C960,160,1056,224,1152,229.3C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+      </svg> 
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Fonctionnalités</span>
+       <h1>Des outils puissants pour votre équipe</h1>
+        <h1>Tout ce dont vous avez besoin pour gérer vos projets efficacement</h1>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card" *ngFor="let feature of features" [ngStyle]="{'border-top': '3px solid ' + feature.bgColor}">
+          <div class="feature-icon" [ngStyle]="{'background-color': feature.bgColor}">
+            <i [class]="feature.icon"></i>
+          </div>
+          <h3>{{feature.title}}</h3>
+          <p>{{feature.description}}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it Works Section -->
+  <section id="how-it-works" class="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Processus</span>
+        <h3>Comment Ça Marche ?</h3>
+        <!-- <h4>Étapes simples pour booster la productivité de votre équipe</h4> -->
+      </div>
+      <div class="steps">
+        <div class="step" *ngFor="let step of steps; let i = index">
+          <div class="step-number" [ngStyle]="{'background-color': step.color}">{{i + 1}}</div>
+          <div class="step-content">
+            <h3><i [class]="step.icon" [ngStyle]="{'color': step.color}"></i> {{step.title}}</h3>
+            <p>{{step.description}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="decoration-shape shape1"></div>
+    <div class="decoration-shape shape2"></div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section id="testimonials" class="testimonials">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Témoignages</span>
+        <h1>Ce Que Disent Nos Utilisateurs</h1>
+      </div>
+      <div class="testimonial-slider">
+        <div class="testimonial" *ngFor="let testimonial of testimonials; let i = index"
+             [ngClass]="{'active': currentTestimonial === i}">
+          <div class="testimonial-content" [ngStyle]="{'border-left': '4px solid ' + testimonial.bgColor}">
+            <div class="quote" [ngStyle]="{'color': testimonial.bgColor}">"</div>
+            <p>{{testimonial.content}}</p>
+            <div class="testimonial-author">
+              <div class="author-avatar" [ngStyle]="{'background-color': testimonial.bgColor}">
+                {{testimonial.name.charAt(0)}}
+              </div>
+              <div class="author-info">
+                <h4>{{testimonial.name}}</h4>
+                <p>{{testimonial.position}}, <span [ngStyle]="{'color': testimonial.bgColor}">{{testimonial.company}}</span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-nav">
+          <button class="prev-btn" (click)="prevTestimonial()">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <div class="dots">
+            <span *ngFor="let _ of testimonials; let i = index" 
+                  [ngClass]="{'active': currentTestimonial === i}"
+                  (click)="goToTestimonial(i)"></span>
+          </div>
+          <button class="next-btn" (click)="nextTestimonial()">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta">
+    <div class="container">
+      <div class="cta-content">
+        <h2>Prêt à transformer votre workflow?</h2>
+        <h4>Rejoignez plus de 10,000 équipes qui utilisent déjà Workflow pour booster leur productivité.</h4><br>
+        <button class="cta-btn" routerLink="/auth/register">Commencer Gratuitement</button>
+        <div class="cta-clients">
+          <span>Ils nous font confiance:</span>
+          <div class="client-logos">
+            <div class="client-logo">TechCorp</div>
+            <div class="client-logo">InnovateLabs</div>
+            <div class="client-logo">GlobalMedia</div>
+            <div class="client-logo">FutureTech</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="cta-decoration"></div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="logo">
+            <div class="logo-icon">W</div>
+            <h1>Workflow</h1>
+          </div>
+          <p>La plateforme de gestion de projet la plus intuitive pour les équipes modernes.</p>
+          <div class="social-links">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <div class="link-group">
+            <h4>Produit</h4>
+            <a href="#">Fonctionnalités</a>
+            <a href="#">Intégrations</a>
+            <a href="#">Feuille de route</a>
+          </div>
+          <div class="link-group">
+            <h4>Entreprise</h4>
+            <a href="#">À propos</a>
+            <a href="#">Carrières</a>
+            <a href="#">Blog</a>
+            <a href="#">Presse</a>
+          </div>
+          <div class="link-group">
+            <h4>Ressources</h4>
+            <a href="#">Documentation</a>
+            <a href="#">Centre d'aide</a>
+            <a href="#">Guides</a>
+            <a href="#">API</a>
+          </div>
+          <div class="link-group">
+            <h4>Légal</h4>
+            <a href="#">Confidentialité</a>
+            <a href="#">Conditions</a>
+            <a href="#">Sécurité</a>
+          </div>
+        </div>
+      </div>
+      <div class="copyright">
+        <p>&copy; {{currentYear}} Workflow. Tous droits réservés.</p>
+      </div>
+    </div>
+  </footer>
+</div>

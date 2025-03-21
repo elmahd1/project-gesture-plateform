@@ -1,0 +1,22 @@
+<div class="auth-layout">
+  <div class="auth-layout__container">
+    <div class="auth-layout__logo">
+      <img src="assets/images/logo.svg" alt="Workflow Logo" class="auth-layout__logo-img">
+      <span class="auth-layout__logo-text">Workflow</span>
+    </div>
+    
+    <div class="auth-layout__content">
+      <router-outlet></router-outlet>
+    </div>
+    
+    <div class="auth-layout__footer">
+      <p>&copy; {{ currentYear }} Workflow. All rights reserved.</p>
+    </div>
+  </div>
+  
+  <div class="auth-layout__background">
+    <div class="auth-layout__shape auth-layout__shape--1"></div>
+    <div class="auth-layout__shape auth-layout__shape--2"></div>
+    <div class="auth-layout__shape auth-layout__shape--3"></div>
+  </div>
+</div>

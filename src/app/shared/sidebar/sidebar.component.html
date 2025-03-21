@@ -1,0 +1,77 @@
+<aside class="sidebar" [ngClass]="{'sidebar--collapsed': isCollapsed}">
+    <div class="sidebar__header">
+      <a routerLink="/dashboard" class="sidebar__logo">
+        <img src="assets/images/logo.svg" alt="Workflow Logo" class="sidebar__logo-img">
+        <span class="sidebar__logo-text" *ngIf="!isCollapsed">Workflow</span>
+      </a>
+      <button class="sidebar__toggle" (click)="onToggleSidebar()">
+        <i *ngIf="isCollapsed" class="fas fa-angle-right"></i>
+        <i *ngIf="!isCollapsed" class="fas fa-angle-left"></i>
+      </button>
+    </div>
+    
+    <div class="sidebar__content">
+      <div class="sidebar__user" *ngIf="!isCollapsed && (authService.currentUser$ | async) as user">
+        <div class="sidebar__user-avatar">
+          <img *ngIf="user.profileImage" [src]="user.profileImage" alt="User avatar">
+          <div *ngIf="!user.profileImage" class="sidebar__user-initial">{{ user.firstName?.charAt(0) }}</div>
+        </div>
+        <div class="sidebar__user-info">
+          <h4 class="sidebar__user-name">{{ user.firstName }} {{ user.lastName }}</h4>
+          <p class="sidebar__user-role">{{ user.role }}</p>
+        </div>
+      </div>
+      
+      <nav class="sidebar__nav">
+        <ul class="sidebar__nav-list">
+          <li class="sidebar__nav-item">
+            <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" class="sidebar__nav-link">
+              <i class="fas fa-tachometer-alt sidebar__nav-icon"></i>
+              <span class="sidebar__nav-text" *ngIf="!isCollapsed">Dashboard</span>
+            </a>
+          </li>
+          <li class="sidebar__nav-item">
+            <a routerLink="/projects" routerLinkActive="active" class="sidebar__nav-link">
+              <i class="fas fa-project-diagram sidebar__nav-icon"></i>
+              <span class="sidebar__nav-text" *ngIf="!isCollapsed">Projects</span>
+            </a>
+          </li>
+          <li class="sidebar__nav-item">
+            <a routerLink="/tasks" routerLinkActive="active" class="sidebar__nav-link">
+              <i class="fas fa-tasks sidebar__nav-icon"></i>
+              <span class="sidebar__nav-text" *ngIf="!isCollapsed">Tasks</span>
+            </a>
+          </li>
+          <li class="sidebar__nav-item">
+            <a routerLink="/tasks/calendar" routerLinkActive="active" class="sidebar__nav-link">
+              <i class="fas fa-calendar-alt sidebar__nav-icon"></i>
+              <span class="sidebar__nav-text" *ngIf="!isCollapsed">Calendar</span>
+            </a>
+          </li>
+          <li class="sidebar__nav-item">
+            <a routerLink="/users" routerLinkActive="active" class="sidebar__nav-link">
+              <i class="fas fa-users sidebar__nav-icon"></i>
+              <span class="sidebar__nav-text" *ngIf="!isCollapsed">Team</span>
+            </a>
+          </li>
+          <li class="sidebar__nav-item">
+            <a routerLink="/reports" routerLinkActive="active" class="sidebar__nav-link">
+              <i class="fas fa-chart-bar sidebar__nav-icon"></i>
+              <span class="sidebar__nav-text" *ngIf="!isCollapsed">Reports</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+    
+    <div class="sidebar__footer">
+      <a routerLink="/settings" routerLinkActive="active" class="sidebar__footer-link">
+        <i class="fas fa-cog sidebar__footer-icon"></i>
+        <span class="sidebar__footer-text" *ngIf="!isCollapsed">Settings</span>
+      </a>
+      <button (click)="authService.logout()" class="sidebar__footer-link">
+        <i class="fas fa-sign-out-alt sidebar__footer-icon"></i>
+        <span class="sidebar__footer-text" *ngIf="!isCollapsed">Logout</span>
+      </button>
+    </div>
+  </aside>
