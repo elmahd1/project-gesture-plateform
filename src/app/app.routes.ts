@@ -11,7 +11,7 @@ export const routes: Routes = [
   // Auth routes - using auth layout
   {
     path: '',
-    loadComponent: () => import('./layouts/auth-layout/auth-layout.component').then(m => m.AuthLayoutComponent),
+    loadComponent: () => import("C:\\Users\\DELL\\Documents\\Workflow Frontend\\workflow\\src\\layouts\\auth-layout\\auth-layout.component").then(m => m.AuthLayoutComponent),
     children: [
       {
         path: 'login',
@@ -36,7 +36,7 @@ export const routes: Routes = [
   {
     path: '',
     canActivate: [authGuard],
-    loadComponent: () => import('./layouts/main-layout/main-layout.component').then(m => m.MainLayoutComponent),
+    loadComponent: () => import("C:\\Users\\DELL\\Documents\\Workflow Frontend\\workflow\\src\\layouts\\main-layout\\main-layout.component").then(m => m.MainLayoutComponent),
     children: [
       // Dashboard routes
       {
@@ -90,6 +90,52 @@ export const routes: Routes = [
       {
         path: 'tasks/:id/edit',
         loadComponent: () => import('./tasks/task-form/task-form.component').then(m => m.TaskFormComponent)
+      },
+      
+    // Calendrier routes
+{
+  path: 'calendrier',
+  loadComponent: () => import('./calendrier/calendrier-view/calendrier-view.component').then(m => m.CalendrierViewComponent)
+},
+{
+  path: 'calendrier/event/new',
+  loadComponent: () => import('./calendrier/evenement-form/evenement-form.component').then(m => m.EvenementFormComponent)
+},
+{
+  path: 'calendrier/event/:id/edit',
+  loadComponent: () => import('./calendrier/evenement-form/evenement-form.component').then(m => m.EvenementFormComponent)
+},
+      
+      // Documents routes
+      {
+        path: 'documents',
+        loadComponent: () => import('./documents/documents-list/documents-list.component').then(m => m.DocumentsListComponent)
+      },
+      {
+        path: 'documents/upload',
+        loadComponent: () => import('./documents/document-upload/document-upload.component').then(m => m.DocumentUploadComponent)
+      },
+      {
+        path: 'documents/:id',
+        loadComponent: () => import('./documents/document-detail/document-detail.component').then(m => m.DocumentDetailComponent)
+      },
+      
+      // Risques routes
+      {
+        path: 'risques',
+        loadComponent: () => import('./risques/risques-list/risques-list.component').then(m => m.RisquesListComponent)
+      },
+      {
+        path: 'risques/new',
+        loadComponent: () => import('./risques/risque-form/risque-form.component').then(m => m.RisqueFormComponent)
+      },
+      {
+        path: 'risques/:id',
+        loadComponent: () => import('./risques/risque-detail/risque-detail.component').then(m => m.RisqueDetailComponent)
+      },
+      {
+        path: 'risques/:id/edit',
+        loadComponent: () => import('./risques/risque-form/risque-form.component').then(m => m.RisqueFormComponent)
       },
       
       // Reports routes

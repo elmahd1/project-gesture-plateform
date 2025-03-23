@@ -8,14 +8,15 @@ import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-sp
 import { TimeAgoPipe } from '../../shared/pipes/time-ago.pipe';
 
 import { AuthService } from '../../core/services/auth.service';
-import { ProjectService } from '../../core/services/project.service';
-import { TaskService } from '../../core/services/task.service';
+import { ProjetService } from '../../core/services/projet.service';
+import { TacheService } from '../../core/services/tache.service';
 
-import { User } from '../../core/models/user.model';
-import { Project } from '../../core/models/project.model';
-import { Task } from '../../core/models/task.model';
+import { Utilisateur } from '../../core/models/utilisateur.model';
+import { Projet } from '../../core/models/projet.model';
+import { Tache } from '../../core/models/tache.model';
 
-// Pour les graphiques (si vous ajoutez Chart.js)
+// For charts
+// import { NgChartsModule } from 'ng2-charts';
 import { ChartConfiguration, ChartData } from 'chart.js';
 
 @Component({
@@ -27,9 +28,329 @@ import { ChartConfiguration, ChartData } from 'chart.js';
     FormsModule, 
     LoadingSpinnerComponent,
     TimeAgoPipe
-    
+    // ,
+    // NgChartsModule  // Important: Add this import for chart functionality
   ],
-  templateUrl: './dashboard-home.component.html',
+  template: `
+  <div class="dashboard-content">
+    <!-- État de chargement -->
+    <div *ngIf="loading" class="loading-state">
+      <app-loading-spinner [overlay]="true" message="Chargement du tableau de bord..."></app-loading-spinner>
+    </div>
+
+    <ng-container *ngIf="!loading">
+      <!-- Section Bienvenue -->
+      <div class="welcome-section">
+        <div class="welcome-info">
+          <h1>Bienvenue, {{currentUser?.nom || 'Utilisateur'}} {{currentUser?.prenom || ''}}!</h1>
+          <p>Voici ce qui se passe avec vos projets aujourd'hui.</p>
+        </div>
+        <div class="date-time">
+          <div class="current-date">{{today | date:'EEEE, d MMMM yyyy'}}</div>
+          <div class="current-time">{{time}}</div>
+        </div>
+      </div>
+
+      <!-- Cartes de Statistiques -->
+      <div class="stats-cards">
+        <div class="stat-card" *ngFor="let stat of statsData" [ngStyle]="{'border-color': stat.color}">
+          <div class="stat-icon" [ngStyle]="{'background-color': stat.color}">
+            <i [class]="stat.icon"></i>
+          </div>
+          <div class="stat-info">
+            <h3>{{stat.title}}</h3>
+            <div class="stat-value">{{stat.value}}
+              <span class="stat-change" [ngClass]="{'increase': stat.change > 0, 'decrease': stat.change < 0}" *ngIf="stat.change !== 0">
+                <i class="fas" [ngClass]="stat.change > 0 ? 'fa-arrow-up' : 'fa-arrow-down'"></i>
+                {{Math.abs(stat.change)}}%
+              </span>
+            </div>
+            <p class="stat-description">{{stat.description}}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progression du Projet & Aperçu des Tâches -->
+      <div class="dashboard-grid">
+        <!-- Progression du Projet -->
+        <div class="widget project-progress">
+          <div class="widget-header">
+            <h2>Progression des Projets</h2>
+            <div class="widget-actions">
+              <button class="icon-btn" (click)="refreshProjectData()">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+              <div class="dropdown">
+                <button class="icon-btn">
+                  <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <div class="dropdown-content">
+                  <a (click)="exportProjectData('pdf')">Exporter en PDF</a>
+                  <a (click)="exportProjectData('csv')">Exporter en CSV</a>
+                  <a (click)="exportProjectData('excel')">Exporter en Excel</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="widget-content">
+            <div class="project-list">
+              <div class="project-item" *ngFor="let project of projects">
+                <div class="project-info">
+                  <h3>{{project.nom || 'Projet sans nom'}}</h3>
+                  <div class="project-meta">
+                    <span class="project-deadline">
+                      <i class="fas fa-clock"></i> Échéance 
+                      {{project.dateFin | date:'d MMM'}}
+                    </span>
+                    <span class="project-members">
+                      <i class="fas fa-users"></i> {{project.membres?.length || 0  membres
+                    </span>
+                  </div>
+                </div>
+                <div class="project-progress-bar">
+                  <div class="progress-track">
+
+                  </div>
+                  <div class="progress-percentage">0%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aperçu des Tâches -->
+        <div class="widget task-overview">
+          <div class="widget-header">
+            <h2>Aperçu des Tâches</h2>
+            <div class="widget-actions">
+              <button class="icon-btn">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+              <div class="dropdown">
+                <button class="icon-btn">
+                  <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <div class="dropdown-content">
+                  <a>Toutes les Tâches</a>
+                  <a>Dues Aujourd'hui</a>
+                  <a>Dues Cette Semaine</a>
+                  <a>En Retard</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="widget-content">
+            <div class="task-summary">
+              <div class="task-summary-item">
+                <div class="summary-label">Total</div>
+                <div class="summary-value">{{taskSummary.total}}</div>
+              </div>
+              <div class="task-summary-item">
+                <div class="summary-label">Terminées</div>
+                <div class="summary-value">{{taskSummary.completed}}</div>
+              </div>
+              <div class="task-summary-item">
+                <div class="summary-label">En Cours</div>
+                <div class="summary-value">{{taskSummary.inProgress}}</div>
+              </div>
+              <div class="task-summary-item">
+                <div class="summary-label">En Attente</div>
+                <div class="summary-value">{{taskSummary.pending}}</div>
+              </div>
+              <div class="task-summary-item">
+                <div class="summary-label">En Retard</div>
+                <div class="summary-value">{{taskSummary.overdue}}</div>
+              </div>
+            </div>
+            <div class="task-chart">
+              <!-- Simple visualization instead of chart for now -->
+              <div class="chart-placeholder">
+                Graphique du résumé des tâches
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chronologie d'Activité & Mes Tâches -->
+      <div class="dashboard-grid">
+        <!-- Chronologie d'Activité -->
+        <div class="widget activity-timeline">
+          <div class="widget-header">
+            <h2>Activité Récente</h2>
+            <div class="widget-actions">
+              <button class="text-btn">
+                Voir Tout
+              </button>
+            </div>
+          </div>
+          <div class="widget-content">
+            <div class="timeline">
+              <div class="timeline-item" *ngFor="let activity of activities">
+                <div class="timeline-icon" [ngStyle]="{'background-color': activity.iconBg}">
+                  <i [class]="activity.icon"></i>
+                </div>
+                <div class="timeline-content">
+                  <div class="timeline-header">
+                    <span class="timeline-title" [innerHTML]="activity.title"></span>
+                    <span class="timeline-time">{{activity.time | timeAgo}}</span>
+                  </div>
+                  <div class="timeline-body" *ngIf="activity.description">
+                    <p>{{activity.description}}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mes Tâches -->
+        <div class="widget my-tasks">
+          <div class="widget-header">
+            <h2>Mes Tâches</h2>
+            <div class="widget-actions">
+              <button class="primary-btn sm" routerLink="/tasks/create">
+                <i class="fas fa-plus"></i> Ajouter Tâche
+              </button>
+            </div>
+          </div>
+          <div class="widget-content">
+            <ul class="task-list">
+              <li class="task-item" *ngFor="let task of myTasks" [ngClass]="{'completed': task.statut === 'TERMINE' || task.status === 'TERMINE'}">
+                <div class="task-checkbox">
+                  <input type="checkbox" [id]="'task-' + task.id" [checked]="task.statut === 'TERMINE' || task.status === 'TERMINE'">
+                  <label [for]="'task-' + task.id"></label>
+                </div>
+                <div class="task-content">
+                  <div class="task-header">
+                  
+                    <div class="task-meta">
+                      <span class="task-project">
+
+                      </span>
+                    </div>
+                  </div>
+                  <div class="task-details">
+                    <div class="task-due-date" [ngClass]="{'overdue': isOverdueTask(task)}">
+                      <i class="fas fa-calendar-alt"></i> Échéance {{(task.dateFin || task.datefin) | date:'d MMM, y'}}
+                    </div>
+                    <div class="task-assignee" *ngIf="task.assignes?.length || task.assignee">
+                      <ng-container *ngIf="task.assignes?.length; else singleAssignee">
+                        <img [src]="task.assignes[0].avatar || 'assets/images/default-avatar.jpg'" 
+                             [alt]="task.assignes[0].nom + ' ' + task.assignes[0].prenom">
+                        <span>{{task.assignes[0].nom}} {{task.assignes[0].prenom}}</span>
+                      </ng-container>
+                      <ng-template #singleAssignee>
+                        <img [src]="task.assignee?.avatar || 'assets/images/default-avatar.jpg'" 
+                             [alt]="task.assignee?.nom + ' ' + task.assignee?.prenom">
+                        <span>{{task.assignee?.nom}} {{task.assignee?.prenom}}</span>
+                      </ng-template>
+                    </div>
+                  </div>
+                </div>
+                <div class="task-actions">
+                  <button class="icon-btn">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <div class="dropdown">
+                    <button class="icon-btn">
+                      <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <div class="dropdown-content">
+                      <a>Voir Détails</a>
+                      <a>Réassigner</a>
+                      <a>Supprimer</a>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            </ul>
+            <div class="no-tasks" *ngIf="myTasks.length === 0">
+              <i class="fas fa-clipboard-check"></i>
+              <p>Vous n'avez pas encore de tâches assignées.</p>
+              <button class="secondary-btn" routerLink="/tasks/create">Créer une Nouvelle Tâche</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Graphiques de Performance -->
+      <div class="widget performance-charts">
+        <div class="widget-header">
+          <h2>Analytique de Performance</h2>
+          <div class="widget-actions">
+            <div class="filter-btns">
+              <button class="text-btn" [ngClass]="{'active': currentChartPeriod === 'week'}" >Semaine</button>
+              <button class="text-btn" [ngClass]="{'active': currentChartPeriod === 'month'}" >Mois</button>
+              <button class="text-btn" [ngClass]="{'active': currentChartPeriod === 'quarter'}" >Trimestre</button>
+              <button class="text-btn" [ngClass]="{'active': currentChartPeriod === 'year'}">Année</button>
+            </div>
+            <div class="dropdown">
+              <button class="icon-btn">
+                <i class="fas fa-ellipsis-v"></i>
+              </button>
+              <div class="dropdown-content">
+                <a>Exporter en PDF</a>
+                <a>Exporter en Image</a>
+                <a>Imprimer</a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="widget-content">
+          <div class="chart-container">
+            <!-- Simple visualization instead of chart for now -->
+            <div class="chart-placeholder">
+              Graphique de performance
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Performance d'Équipe -->
+      <div class="widget team-performance">
+        <div class="widget-header">
+          <h2>Performance d'Équipe</h2>
+          <div class="widget-actions">
+            <button class="text-btn" routerLink="/team">
+              Voir Tous les Membres
+            </button>
+          </div>
+        </div>
+        <div class="widget-content">
+          <div class="team-members">
+            <div class="team-member" *ngFor="let member of teamMembers">
+              <div class="member-avatar">
+   
+                <span class="status-indicator" [ngClass]="member.status"></span>
+              </div>
+              <div class="member-info">
+                <h3>{{member.name}}</h3>
+                <p>{{member.role}}</p>
+              </div>
+              <div class="member-stats">
+                <div class="member-stat">
+                  <span class="stat-label">Tâches</span>
+                  <span class="stat-value">{{member.tasks}}</span>
+                </div>
+                <div class="member-stat">
+                  <span class="stat-label">Terminées</span>
+                  <span class="stat-value">{{member.completed}}</span>
+                </div>
+              </div>
+              <div class="member-progress">
+                <div class="progress-track">
+                  <div class="progress-fill" [ngStyle]="{'width': member.efficiency + '%', 'background-color': getProgressColor(member.efficiency)}"></div>
+                </div>
+                <div class="progress-percentage">{{member.efficiency}}%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+  `,
   styleUrls: ['./dashboard-home.component.scss']
 })
 export class DashboardHomeComponent implements OnInit, OnDestroy {
@@ -39,7 +360,7 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
   timeSubscription!: Subscription;
   
   // Données utilisateur
-  currentUser: User | null = null;
+  currentUser: Utilisateur | null = null;
   
   // État de chargement
   loading = true;
@@ -81,10 +402,10 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
   ];
   
   // Données de projet
-  projects: Project[] = [];
+  projects: Projet[] = [];
   
   // Données de tâche
-  myTasks: Task[] = [];
+  myTasks: Tache[] = [];
   taskSummary = {
     total: 0,
     completed: 0,
@@ -287,8 +608,8 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
-    private projectService: ProjectService,
-    private taskService: TaskService
+    private projectService: ProjetService,
+    private taskService: TacheService
   ) {}
 
   ngOnInit(): void {
@@ -323,39 +644,59 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
     this.loading = true;
     
     // Charger les projets
-    this.projectService.getProjects().subscribe(projects => {
-      this.projects = projects.slice(0, 4); // Limiter à 4 projets pour le dashboard
-      
-      // Charger les tâches
-      this.taskService.getTasks().subscribe(tasks => {
-        // Tâches assignées à l'utilisateur actuel
-        if (this.currentUser) {
-          this.myTasks = tasks.filter(task => 
-            task.assignee && task.assignee.id === this.currentUser?.id
-          ).slice(0, 5); // Limiter à 5 tâches
-        }
+    this.projectService.getProjects().subscribe({
+      next: (projects) => {
+        this.projects = projects.slice(0, 4); // Limiter à 4 projets pour le dashboard
         
-        // Calculer le résumé des tâches
-        this.calculateTaskSummary(tasks);
-        
-        // Simuler un délai de chargement pour l'UX
-        setTimeout(() => {
-          this.loading = false;
-        }, 800);
-      });
+        // Charger les tâches
+        this.taskService.getTasks().subscribe({
+          next: (tasks) => {
+            // Tâches assignées à l'utilisateur actuel
+            if (this.currentUser) {
+              this.myTasks = tasks.filter(task => 
+                // Check both assignes array and assignee individual object
+                (task.assignes && task.assignes.some(u => u.id === this.currentUser?.id)) || 
+                (task.assignee && task.assignee.id === this.currentUser?.id)
+              ).slice(0, 5); // Limiter à 5 tâches
+            }
+            
+            // Calculer le résumé des tâches
+            this.calculateTaskSummary(tasks);
+            
+            // Simuler un délai de chargement pour l'UX
+            setTimeout(() => {
+              this.loading = false;
+            }, 800);
+          },
+          error: (error) => {
+            console.error('Error loading tasks:', error);
+            this.loading = false;
+          }
+        });
+      },
+      error: (error) => {
+        console.error('Error loading projects:', error);
+        this.loading = false;
+      }
     });
   }
   
-  calculateTaskSummary(tasks: Task[]): void {
+  calculateTaskSummary(tasks: Tache[]): void {
     this.taskSummary.total = tasks.length;
-    this.taskSummary.completed = tasks.filter(t => t.status === 'completed').length;
-    this.taskSummary.inProgress = tasks.filter(t => t.status === 'in_progress').length;
-    this.taskSummary.pending = tasks.filter(t => t.status === 'pending').length;
+    this.taskSummary.completed = tasks.filter(t => 
+      t.statut === 'TERMINE' || t.status === 'TERMINE'
+    ).length;
+    this.taskSummary.inProgress = tasks.filter(t => 
+      t.statut === 'EN_COURS' || t.status === 'EN_COURS'
+    ).length;
+    this.taskSummary.pending = tasks.filter(t => 
+      t.statut === 'A_FAIRE' || t.status === 'A_FAIRE' || t.status === 'pending'
+    ).length;
     this.taskSummary.overdue = tasks.filter(t => 
-      t.status !== 'completed' && this.isOverdue(t.dueDate)
+      (t.statut !== 'TERMINE' && t.status !== 'TERMINE') && this.isOverdueTask(t)
     ).length;
     
-    // Mettre à jour les données du graphique
+    // Update chart data
     this.taskChartData.datasets[0].data = [
       this.taskSummary.completed,
       this.taskSummary.inProgress,
@@ -370,8 +711,11 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
     return '#10b981'; // vert
   }
   
-  isOverdue(date: Date): boolean {
-    return new Date(date) < new Date() && new Date(date).toDateString() !== new Date().toDateString();
+  // Safe version of isOverdue that handles undefined dates
+  isOverdueTask(task: Tache): boolean {
+    const dueDate = task.dateFin || task.datefin;
+    if (!dueDate) return false;
+    return new Date(dueDate) < new Date() && new Date(dueDate).toDateString() !== new Date().toDateString();
   }
   
   // Actions sur les projets
@@ -382,78 +726,5 @@ export class DashboardHomeComponent implements OnInit, OnDestroy {
   exportProjectData(format: string): void {
     console.log(`Exporting project data as ${format}...`);
     // Implémenter la fonctionnalité d'exportation
-  }
-  
-  // Actions sur les tâches
-  refreshTaskData(): void {
-    this.loadDashboardData();
-  }
-  
-  filterTasks(filter: string): void {
-    console.log(`Filtering tasks by: ${filter}`);
-    // Implémenter la fonctionnalité de filtrage
-  }
-  
-  updateTaskStatus(task: Task): void {
-    task.status = task.status === 'completed' ? 'pending' : 'completed';
-    // Mettre à jour le backend
-    this.taskService.updateTask(task.id, { status: task.status }).subscribe(() => {
-      this.loadDashboardData(); // Recharger les données pour actualiser les compteurs et graphiques
-    });
-  }
-  
-  editTask(task: Task): void {
-    console.log(`Editing task ${task.id}`);
-    // Rediriger vers la page d'édition de tâche
-    // this.router.navigate(['/tasks', task.id, 'edit']);
-  }
-  
-  viewTaskDetails(task: Task): void {
-    console.log(`Viewing task ${task.id}`);
-    // Rediriger vers la page de détail de tâche
-    // this.router.navigate(['/tasks', task.id]);
-  }
-  
-  assignTask(task: Task): void {
-    console.log(`Assigning task ${task.id}`);
-    // Implémenter la fonctionnalité d'assignation
-  }
-  
-  deleteTask(task: Task): void {
-    console.log(`Deleting task ${task.id}`);
-    // Implémenter la fonctionnalité de suppression
-  }
-  
-  // Actions sur les activités
-  loadMoreActivities(): void {
-    console.log('Loading more activities...');
-    // Implémenter la fonctionnalité de chargement d'activités supplémentaires
-  }
-  
-  // Actions sur les graphiques
-  changeChartPeriod(period: string): void {
-    this.currentChartPeriod = period;
-    
-    // Mettre à jour les données du graphique en fonction de la période sélectionnée
-    console.log(`Changing chart period to ${period}...`);
-    
-    if (period === 'week') {
-      this.performanceChartData.labels = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-      // Mettre à jour les datasets en conséquence
-    } else if (period === 'month') {
-      this.performanceChartData.labels = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
-      // Mettre à jour les datasets en conséquence
-    }
-    // Similaire pour 'quarter' et 'year'
-  }
-  
-  exportChartData(format: string): void {
-    console.log(`Exporting chart data as ${format}...`);
-    // Implémenter la fonctionnalité d'exportation
-  }
-  
-  printChart(): void {
-    console.log('Printing chart...');
-    // Implémenter la fonctionnalité d'impression
   }
 }

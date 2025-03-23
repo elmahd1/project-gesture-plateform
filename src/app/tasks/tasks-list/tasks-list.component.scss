@@ -1,0 +1,191 @@
+.tasks-list-container {
+    padding: 20px;
+    background-color: #f4f5f7;
+  
+    .tasks-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+  
+      h1 {
+        margin: 0;
+        font-size: 1.8rem;
+        color: #333;
+      }
+  
+      .btn-primary {
+        background-color: #4f46e5;
+        color: white;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+  
+        &:hover {
+          background-color: #4338ca;
+        }
+      }
+    }
+  
+    .tasks-filters {
+      margin-bottom: 20px;
+  
+      select {
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+    }
+  
+    .tasks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+    }
+  
+    .task-card {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      transition: transform 0.3s ease;
+  
+      &:hover {
+        transform: translateY(-5px);
+      }
+  
+      .task-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+  
+        h3 {
+          margin: 0;
+          color: #333;
+        }
+  
+        .task-status {
+          font-size: 0.8rem;
+          padding: 4px 8px;
+          border-radius: 12px;
+          text-transform: uppercase;
+        }
+      }
+  
+      .task-body {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+  
+        .task-meta {
+          display: flex;
+          justify-content: space-between;
+          font-size: 0.9rem;
+          color: #666;
+        }
+  
+        .task-dates {
+          display: flex;
+          justify-content: space-between;
+          font-size: 0.9rem;
+          color: #666;
+        }
+  
+        .task-progress {
+          margin-top: 10px;
+  
+          .progress-track {
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            height: 10px;
+            overflow: hidden;
+          }
+  
+          .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+          }
+  
+          .progress-percentage {
+            text-align: right;
+            font-size: 0.8rem;
+            color: #666;
+          }
+        }
+  
+        .task-assignees {
+          .assignee-avatars {
+            display: flex;
+            
+            img {
+              width: 30px;
+              height: 30px;
+              border-radius: 50%;
+              margin-right: -10px;
+              border: 2px solid white;
+            }
+  
+            .more-assignees {
+              background-color: #ddd;
+              border-radius: 50%;
+              width: 30px;
+              height: 30px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 0.7rem;
+            }
+          }
+        }
+      }
+  
+      .task-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 15px;
+  
+        .btn {
+          padding: 8px 15px;
+          border-radius: 4px;
+          text-decoration: none;
+        }
+  
+        .btn-secondary {
+          background-color: #f3f4f6;
+          color: #333;
+          border: 1px solid #ddd;
+        }
+  
+        .btn-primary {
+          background-color: #4f46e5;
+          color: white;
+          border: none;
+        }
+      }
+    }
+  
+    // Status colors
+    .status-pending {
+      .task-status { background-color: #fef3c7; color: #92400e; }
+    }
+  
+    .status-in-progress {
+      .task-status { background-color: #e0f2fe; color: #0369a1; }
+    }
+  
+    .status-completed {
+      .task-status { background-color: #d1fae5; color: #065f46; }
+    }
+  
+    .no-tasks {
+      text-align: center;
+      color: #666;
+      padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+    }
+  }

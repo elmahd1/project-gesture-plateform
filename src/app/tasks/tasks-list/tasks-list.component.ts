@@ -1,203 +1,197 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
 
-interface Task {
-  id: number;
-  title: string;
-  description: string;
-  status: 'TODO' | 'IN_PROGRESS' | 'REVIEW' | 'COMPLETED';
-  priority: 'Low' | 'Normal' | 'High' | 'Urgent'; // Updated to match model
-  dueDate: Date;
-  project: {
-    id: number;
-    name: string;
-  };
-  assignee: {
-    id: number;
-    name: string;
-    avatar?: string;
-  };
-  selected?: boolean;
-}
+import { Tache } from '../../core/models/tache.model';
+import { TacheService } from '../../core/services/tache.service';
 
 @Component({
   selector: 'app-tasks-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [
+    CommonModule,
+    RouterModule
+  ],
   template: `
-    <div class="tasks-list">
-      <!-- Previous template code remains the same -->
-      
-      <!-- Empty state -->
-      <div class="tasks-list__empty" *ngIf="filteredTasks.length === 0">
-        <div class="tasks-list__empty-icon">
-          <i class="fas fa-tasks"></i>
-        </div>
-        <h3 class="tasks-list__empty-title">Aucune tâche trouvée</h3>
-        <p class="tasks-list__empty-message">
-  </p>
-        <button routerLink="/tasks/new" class="btn btn-primary" *ngIf="!hasFilters()">
-          <i class="fas fa-plus"></i> Créer une tâche
+  <div class="tasks-list-container">
+    <div class="tasks-header">
+      <h1>Mes Tâches</h1>
+      <div class="tasks-actions">
+        <button 
+          class="btn btn-primary" 
+          routerLink="/tasks/new"
+        >
+          <i class="fas fa-plus"></i> Nouvelle Tâche
         </button>
       </div>
     </div>
+
+    <div class="tasks-filters">
+      <select (change)="filterTasks($event)">
+        <option value="all">Toutes les Tâches</option>
+        <option value="A_FAIRE">À Faire</option>
+        <option value="EN_COURS">En Cours</option>
+        <option value="TERMINE">Terminées</option>
+      </select>
+    </div>
+
+    <div class="tasks-grid">
+      <div 
+        *ngFor="let task of filteredTasks" 
+        class="task-card"
+        [ngClass]="getTaskStatusClass(task.statut)"
+      >
+        <div class="task-header">
+          <h3>{{ task.titre }}</h3>
+          <span class="task-status">
+            {{ getTaskStatusLabel(task.statut) }}
+          </span>
+        </div>
+
+        <div class="task-body">
+          <p>{{ task.description }}</p>
+
+          <div class="task-meta">
+            <div class="task-project" *ngIf="task.projet">
+              <i class="fas fa-project-diagram"></i> 
+              {{ task.projet.nom }}
+            </div>
+
+            <div class="task-priority">
+              <i class="fas fa-exclamation-circle"></i> 
+              {{ getTaskPriorityLabel(task.priorite) }}
+            </div>
+          </div>
+
+          <div class="task-dates">
+            <div class="task-start-date">
+              <i class="fas fa-calendar-alt"></i> 
+              Début: {{ task.dateDebut | date:'dd MMM yyyy' }}
+            </div>
+            <div class="task-end-date">
+              <i class="fas fa-calendar-check"></i> 
+              Fin: {{ task.dateFin | date:'dd MMM yyyy' }}
+            </div>
+          </div>
+
+          <div class="task-progress">
+            <div class="progress-track">
+              <div 
+                class="progress-fill" 
+                [ngStyle]="{
+                  'width': task.progression + '%', 
+                  'background-color': getProgressColor(task.progression)
+                }"
+              ></div>
+            </div>
+            <div class="progress-percentage">
+              {{ task.progression }}%
+            </div>
+          </div>
+
+          <div class="task-assignees" *ngIf="task.assignes && task.assignes.length">
+            <div class="assignee-avatars">
+              <img 
+                *ngFor="let assignee of task.assignes.slice(0,3)" 
+                [src]="assignee.avatar || 'assets/images/default-avatar.jpg'"
+                [alt]="assignee.nom + ' ' + assignee.prenom"
+              />
+              <span *ngIf="task.assignes.length > 3" class="more-assignees">
+                +{{ task.assignes.length - 3 }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="task-actions">
+          <button 
+            class="btn btn-secondary" 
+            [routerLink]="['/tasks', task.id]"
+          >
+            Détails
+          </button>
+          <button 
+            class="btn btn-primary" 
+            [routerLink]="['/tasks', task.id, 'edit']"
+          >
+            Modifier
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="filteredTasks.length === 0" class="no-tasks">
+      Aucune tâche trouvée
+    </div>
+  </div>
   `,
-  styles: [`
-    /* Existing styles remain the same */
-  `]
+  styleUrls: ['./tasks-list.component.scss']
 })
 export class TasksListComponent implements OnInit {
-  tasks: Task[] = [];
-  filteredTasks: Task[] = [];
-  projects: any[] = [];
-  
-  currentView: 'list' | 'board' | 'calendar' = 'list';
-  searchQuery: string = '';
-  statusFilter: string = 'all';
-  priorityFilter: string = 'all';
-  projectFilter: string = 'all';
-  
-  bulkStatus: string = '';
-  bulkPriority: string = '';
-  
-  constructor() {}
-  
+  tasks: Tache[] = [];
+  filteredTasks: Tache[] = [];
+
+  constructor(private tacheService: TacheService) {}
+
   ngOnInit(): void {
-    this.loadMockData();
-    this.filterTasks();
+    this.loadTasks();
   }
-  
-  loadMockData(): void {
-    // Mock projects
-    this.projects = [
-      { id: 1, name: 'Refonte du site web' },
-      { id: 2, name: 'Application mobile' },
-      { id: 3, name: 'Campagne marketing' },
-      { id: 4, name: 'Refactoring du code legacy' }
-    ];
-    
-    // Mock tasks with corrected priority
-    this.tasks = [
-      {
-        id: 1,
-        title: 'Maquettes de la page d\'accueil',
-        description: 'Création des maquettes pour la nouvelle page d\'accueil du site web',
-        status: 'COMPLETED',
-        priority: 'High', // Updated
-        dueDate: new Date('2023-03-15'),
-        project: { id: 1, name: 'Refonte du site web' },
-        assignee: { id: 2, name: 'Marie Martin' },
-        selected: false
+
+  loadTasks(): void {
+    this.tacheService.getTasks().subscribe({
+      next: (tasks) => {
+        this.tasks = tasks;
+        this.filteredTasks = tasks;
       },
-      // Other tasks updated similarly
-    ];
-  }
-  
-  filterTasks(): void {
-    this.filteredTasks = this.tasks.filter(task => {
-      // Filter by search query
-      const matchesSearch = 
-        !this.searchQuery || 
-        task.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        task.description.toLowerCase().includes(this.searchQuery.toLowerCase());
-      
-      // Filter by status
-      const matchesStatus = 
-        this.statusFilter === 'all' || 
-        task.status === this.statusFilter;
-      
-      // Filter by priority
-      const matchesPriority = 
-        this.priorityFilter === 'all' || 
-        task.priority === this.priorityFilter;
-      
-      // Filter by project
-      const matchesProject = 
-        this.projectFilter === 'all' || 
-        task.project.id.toString() === this.projectFilter;
-      
-      return matchesSearch && matchesStatus && matchesPriority && matchesProject;
+      error: (error) => {
+        console.error('Erreur lors du chargement des tâches', error);
+      }
     });
   }
-  
-  getStatusLabel(status: string): string {
-    switch (status) {
-      case 'TODO': return 'À faire';
-      case 'IN_PROGRESS': return 'En cours';
-      case 'REVIEW': return 'En revue';
-      case 'COMPLETED': return 'Terminé';
-      default: return status;
-    }
-  }
-  
-  getPriorityLabel(priority: string):
-  string {
-    switch (priority) {
-      case 'LOW': return 'Basse';
-      case 'NORMAL': return 'Normale';
-      case 'HIGH': return 'Haute';
-      case 'URGENT': return 'Urgente';
-      default: return priority;
-    }
-  }
-  
-  isOverdue(date: Date): boolean {
-    return new Date(date) < new Date();
-  }
-  
-  toggleSelectAll(event: any): void {
-    const checked = event.target.checked;
-    this.filteredTasks.forEach(task => task.selected = checked);
-  }
-  
-  getSelectedTasksCount(): number {
-    return this.filteredTasks.filter(task => task.selected).length;
-  }
-  
-  hasFilters(): boolean {
-    return !!this.searchQuery || 
-           this.statusFilter !== 'all' || 
-           this.priorityFilter !== 'all' ||
-           this.projectFilter !== 'all';
-  }
-  
-  applyBulkChanges(): void {
-    const selectedTasks = this.tasks.filter(task => task.selected);
+
+  filterTasks(event: Event): void {
+    const status = (event.target as HTMLSelectElement).value;
     
-    if (this.bulkStatus) {
-      selectedTasks.forEach(task => {
-        // Type assertion to ensure only valid statuses are assigned
-        task.status = this.bulkStatus as 'TODO' | 'IN_PROGRESS' | 'REVIEW' | 'COMPLETED';
-      });
-    }
-    
-    if (this.bulkPriority) {
-      selectedTasks.forEach(task => {
-        // Type assertion to ensure only valid priorities are assigned
-        // task.priority = this.bulkPriority as 'LOW' | 'NORMAL' | 'HIGH' | 'URGENT';
-      });
-    }
-    
-    // Reset bulk selections
-    this.bulkStatus = '';
-    this.bulkPriority = '';
-    
-    // Reapply filters
-    this.filterTasks();
-  }
-  bulkDelete(): void {
-    if (confirm(`Êtes-vous sûr de vouloir supprimer ${this.getSelectedTasksCount()} tâche(s) ?`)) {
-      this.tasks = this.tasks.filter(task => !task.selected);
-      this.filterTasks();
+    if (status === 'all') {
+      this.filteredTasks = this.tasks;
+    } else {
+      this.filteredTasks = this.tasks.filter(
+        task => task.statut === status
+      );
     }
   }
-  
-  deleteTask(id: number): void {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette tâche ?')) {
-      this.tasks = this.tasks.filter(task => task.id !== id);
-      this.filterTasks();
-    }
+
+  getTaskStatusClass(status: string): string {
+    const statusClasses: { [key: string]: string } = {
+      'A_FAIRE': 'status-pending',
+      'EN_COURS': 'status-in-progress',
+      'TERMINE': 'status-completed'
+    };
+    return statusClasses[status] || '';
+  }
+
+  getTaskStatusLabel(status: string): string {
+    const statusLabels: { [key: string]: string } = {
+      'A_FAIRE': 'À Faire',
+      'EN_COURS': 'En Cours',
+      'TERMINE': 'Terminée'
+    };
+    return statusLabels[status] || status;
+  }
+
+  getTaskPriorityLabel(priority: string): string {
+    const priorityLabels: { [key: string]: string } = {
+      'FAIBLE': 'Faible',
+      'MOYENNE': 'Moyenne',
+      'ELEVEE': 'Élevée',
+      'URGENTE': 'Urgente'
+    };
+    return priorityLabels[priority] || priority;
+  }
+
+  getProgressColor(progress: number): string {
+    if (progress < 30) return '#ef4444'; // rouge
+    if (progress < 70) return '#f59e0b'; // jaune
+    return '#10b981'; // vert
   }
 }

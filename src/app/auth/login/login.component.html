@@ -1,100 +1,57 @@
 <div class="login-container">
-    <div class="login-card">
-      <div class="login-header">
-        <div class="logo">
-          <div class="logo-icon">W</div>
-          <h1>Workflow</h1>
-        </div>
-        <p>Bienvenue ! Veuillez saisir vos identifiants.</p>
+  <div class="login-wrapper">
+    <div class="logo-container"> 
+      <span class="logo-text">Workflow</span>
+    </div>
+    
+    <h1>Connexion</h1>
+    <p class="subtitle">Veuillez vous connecter pour accéder à votre compte</p>
+    
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email" 
+          placeholder="Entrez votre email"
+        />
       </div>
       
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-        <div class="form-group" [ngClass]="{'error': submitted && f['email'].errors}">
-          <label for="email">Email</label>
-          <div class="input-with-icon">
-            <i class="fas fa-envelope"></i>
-            <input 
-              type="email" 
-              id="email" 
-              formControlName="email" 
-              placeholder="Entrez votre email" 
-              [ngClass]="{'is-invalid': submitted && f['email'].errors}"
-            >
-          </div>
-          <div *ngIf="submitted && f['email'].errors" class="error-message">
-            <span *ngIf="f['email'].errors['required']">L'email est requis</span>
-            <span *ngIf="f['email'].errors['email']">L'email doit être une adresse valide</span>
-          </div>
-        </div>
-        
-        <div class="form-group" [ngClass]="{'error': submitted && f['password'].errors}">
-          <div class="label-group">
-            <label for="password">Mot de passe</label>
-            <a routerLink="/forgot-password" class="forgot-password">Mot de passe oublié?</a>
-          </div>
-          <div class="input-with-icon">
-            <i class="fas fa-lock"></i>
-            <input 
-              [type]="showPassword ? 'text' : 'password'" 
-              id="password" 
-              formControlName="password" 
-              placeholder="Entrez votre mot de passe" 
-              [ngClass]="{'is-invalid': submitted && f['password'].errors}"
-            >
-            <button 
-              type="button" 
-              class="toggle-password" 
-              (click)="togglePasswordVisibility()"
-            >
-              <i class="fas" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
-            </button>
-          </div>
-          <div *ngIf="submitted && f['password'].errors" class="error-message">
-            <span *ngIf="f['password'].errors['required']">Le mot de passe est requis</span>
-            <span *ngIf="f['password'].errors['minlength']">Le mot de passe doit contenir au moins 6 caractères</span>
-          </div>
-        </div>
-        
-        <div class="form-group remember-me">
-          <div class="checkbox">
-            <input type="checkbox" id="remember" formControlName="rememberMe">
-            <label for="remember">Se souvenir de moi</label>
-          </div>
-        </div>
-        
-        <div class="form-actions">
-          <button type="submit" class="login-btn" [disabled]="loading">
-            <span *ngIf="!loading">Se connecter</span>
-            <span *ngIf="loading" class="spinner">
-              <i class="fas fa-spinner fa-spin"></i>
-            </span>
-          </button>
-        </div>
-        
-        <div class="error-alert" *ngIf="error">
-          {{error}}
-        </div>
-      </form>
-      
-      <div class="social-login">
-        <div class="divider">
-          <span>Ou se connecter avec</span>
-        </div>
-        <div class="social-buttons">
-          <button type="button" class="google-btn" (click)="loginWithGoogle()">
-            <i class="fab fa-google"></i>
-            <span>Google</span>
-          </button>
-          <button type="button" class="microsoft-btn" (click)="loginWithMicrosoft()">
-            <i class="fab fa-microsoft"></i>
-            <span>Microsoft</span>
-          </button>
-        </div>
+      <div class="form-group password-group">
+        <label for="password">Mot de passe</label>
+        <input 
+          [type]="showPassword ? 'text' : 'password'" 
+          id="password" 
+          formControlName="password" 
+          placeholder="Entrez votre mot de passe"
+        />
+        <button 
+          type="button" 
+          class="toggle-password" 
+          (click)="togglePasswordVisibility()"
+        >
+          <i class="fas" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+        </button>
       </div>
       
-      <div class="register-link">
-        <p>Vous n'avez pas de compte? <a routerLink="/register">S'inscrire</a></p>
+      <div class="form-actions">
+        <div class="remember-forgot">
+          <div class="remember-me">
+            <input type="checkbox" id="rememberMe" formControlName="rememberMe">
+            <label for="rememberMe">Se souvenir de moi</label>
+          </div>
+          <a href="#" class="forgot-password">Mot de passe oublié?</a>
+        </div>
+        
+        <button type="submit" class="btn-login">
+          Se connecter
+        </button>
       </div>
+    </form>
+    
+    <div class="register-link">
+      <p>Pas encore de compte? <a href="/auth/register">S'inscrire</a></p>
     </div>
   </div>
-  
+</div>

@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
-import { first } from 'rxjs/operators';
 
 @Component({
   selector: 'app-register',
@@ -25,22 +24,16 @@ export class RegisterComponent implements OnInit {
     private router: Router,
     private authService: AuthService
   ) {
-    // Rediriger vers l'accueil si déjà connecté
+    // Redirect to dashboard if already logged in
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['/dashboard']);
     }
   }
 
   ngOnInit(): void {
-    this.initializeForm();
-  }
-
-  // Getter pour faciliter l'accès aux champs du formulaire
-  get f() { return this.registerForm.controls; }
-
-  initializeForm(): void {
     this.registerForm = this.formBuilder.group({
-      name: ['', [Validators.required]],
+      nom: ['', Validators.required],
+      prenom: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required],
@@ -50,6 +43,9 @@ export class RegisterComponent implements OnInit {
     });
   }
 
+  // Getter for easy access to form fields
+  get f() { return this.registerForm.controls; }
+
   passwordMatchValidator(form: FormGroup) {
     const password = form.get('password')?.value;
     const confirmPassword = form.get('confirmPassword')?.value;
@@ -57,7 +53,6 @@ export class RegisterComponent implements OnInit {
     if (password !== confirmPassword) {
       form.get('confirmPassword')?.setErrors({ matchPassword: true });
     } else {
-      // S'il n'y a pas d'autres erreurs, supprimer l'erreur matchPassword
       const confirmErrors = form.get('confirmPassword')?.errors;
       if (confirmErrors && !confirmErrors['required']) {
         form.get('confirmPassword')?.setErrors(null);
@@ -70,24 +65,25 @@ export class RegisterComponent implements OnInit {
   onSubmit(): void {
     this.submitted = true;
 
-    // S'arrêter ici si le formulaire est invalide
+    // Stop if form is invalid
     if (this.registerForm.invalid) {
       return;
     }
 
     this.loading = true;
+    this.error = '';
+
     this.authService.register({
-      name: this.f['name'].value,
+      nom: this.f['nom'].value,
+      prenom: this.f['prenom'].value,
       email: this.f['email'].value,
-      // password: this.f['password'].value
-    })
-    .pipe(first())
-    .subscribe({
+      password: this.f['password'].value
+    }).subscribe({
       next: () => {
         this.router.navigate(['/dashboard']);
       },
-      error: error => {
-        this.error = error;
+      error: (error) => {
+        this.error = error.message || 'Erreur lors de l\'inscription';
         this.loading = false;
       }
     });
@@ -99,29 +95,5 @@ export class RegisterComponent implements OnInit {
 
   toggleConfirmPasswordVisibility(): void {
     this.showConfirmPassword = !this.showConfirmPassword;
-  }
-
-  loginWithGoogle(): void {
-    // this.loading = true;
-    // this.authService.loginWithGoogle()
-    //   .then(() => {
-    //     this.router.navigate(['/dashboard']);
-    //   })
-    //   .catch(error => {
-    //     this.error = error;
-    //     this.loading = false;
-    //   });
-  }
-
-  loginWithMicrosoft(): void {
-    // this.loading = true;
-    // this.authService.loginWithMicrosoft()
-    //   .then(() => {
-    //     this.router.navigate(['/dashboard']);
-    //   })
-    //   .catch(error => {
-    //     this.error = error;
-    //     this.loading = false;
-    //   });
   }
 }

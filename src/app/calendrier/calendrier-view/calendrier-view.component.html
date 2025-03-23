@@ -1,0 +1,96 @@
+<div class="calendrier-container">
+    <div class="calendrier-header">
+      <div class="title-section">
+        <h1>Calendrier</h1>
+        <p>Gérez vos événements et réunions</p>
+      </div>
+      
+      <div class="actions-section">
+        <button class="new-event-btn" (click)="createEvent()">
+          <i class="fas fa-plus"></i> Nouvel Événement
+        </button>
+      </div>
+    </div>
+    
+    <div class="calendar-controls">
+      <div class="month-navigation">
+        <button class="nav-btn" (click)="previousMonth()">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <h2>{{ selectedDate | date:'MMMM yyyy' }}</h2>
+        <button class="nav-btn" (click)="nextMonth()">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+      
+      <div class="view-controls">
+        <button class="view-btn" [class.active]="currentView === 'month'" (click)="currentView = 'month'">Mois</button>
+        <button class="view-btn" [class.active]="currentView === 'week'" (click)="currentView = 'week'">Semaine</button>
+        <button class="view-btn" [class.active]="currentView === 'day'" (click)="currentView = 'day'">Jour</button>
+      </div>
+    </div>
+    
+    <div *ngIf="isLoading" class="loading-indicator">
+      <div class="spinner"></div>
+      <span>Chargement du calendrier...</span>
+    </div>
+    
+    <div *ngIf="error" class="error-message">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>{{ error }}</span>
+    </div>
+    
+    <!-- Month View -->
+    <div *ngIf="!isLoading && currentView === 'month'" class="month-view">
+      <div class="weekdays">
+        <div class="weekday">Dim</div>
+        <div class="weekday">Lun</div>
+        <div class="weekday">Mar</div>
+        <div class="weekday">Mer</div>
+        <div class="weekday">Jeu</div>
+        <div class="weekday">Ven</div>
+        <div class="weekday">Sam</div>
+      </div>
+      
+      <div class="days-grid">
+        <div 
+          *ngFor="let day of calendarDays" 
+          class="day" 
+          [class.today]="isToday(day)" 
+          [class.other-month]="!isCurrentMonth(day)"
+        >
+          <div class="day-header">
+            <span class="day-number">{{ day.getDate() }}</span>
+          </div>
+          
+          <div class="events">
+            <div 
+              *ngFor="let event of getEventsForDay(day)"
+              class="event"
+              [style.background-color]="getEventColor(event.type) + '33'" 
+              [style.border-left-color]="getEventColor(event.type)"
+              (click)="editEvent(event.id!)"
+            >
+              <span class="event-time">{{ event.dateDebut | date:'HH:mm' }}</span>
+              <span class="event-title">{{ event.titre }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Week View (Simplified) -->
+    <div *ngIf="!isLoading && currentView === 'week'" class="week-view">
+      <p class="coming-soon">Vue semaine en développement</p>
+    </div>
+    
+    <!-- Day View (Simplified) -->
+    <div *ngIf="!isLoading && currentView === 'day'" class="day-view">
+      <p class="coming-soon">Vue journalière en développement</p>
+    </div>
+    
+    <!-- No Calendar Message -->
+    <div *ngIf="!isLoading && !calendrier?.id" class="no-calendar">
+      <p>Aucun calendrier trouvé. Création d'un nouveau calendrier en cours...</p>
+    </div>
+  </div>

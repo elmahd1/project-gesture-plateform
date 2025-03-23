@@ -1,1 +1,121 @@
-<p>project-form works!</p>
+<div class="project-form-container">
+  <h1>{{ isEditMode ? 'Modifier le Projet' : 'Créer un Nouveau Projet' }}</h1>
+  
+  <form [formGroup]="projectForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label for="nom">Nom du Projet</label>
+      <input 
+        type="text" 
+        id="nom" 
+        formControlName="nom"
+        [ngClass]="{'is-invalid': isFieldInvalid('nom')}"
+      >
+      <div 
+        *ngIf="isFieldInvalid('nom')" 
+        class="error-message"
+      >
+        {{ getErrorMessage('nom') }}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea 
+        id="description" 
+        formControlName="description"
+        [ngClass]="{'is-invalid': isFieldInvalid('description')}"
+      ></textarea>
+      <div 
+        *ngIf="isFieldInvalid('description')" 
+        class="error-message"
+      >
+        {{ getErrorMessage('description') }}
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="dateDebut">Date de Début</label>
+        <input 
+          type="date" 
+          id="dateDebut" 
+          formControlName="dateDebut"
+          [ngClass]="{'is-invalid': isFieldInvalid('dateDebut')}"
+        >
+        <div 
+          *ngIf="isFieldInvalid('dateDebut')" 
+          class="error-message"
+        >
+          {{ getErrorMessage('dateDebut') }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="dateFin">Date de Fin</label>
+        <input 
+          type="date" 
+          id="dateFin" 
+          formControlName="dateFin"
+          [ngClass]="{'is-invalid': isFieldInvalid('dateFin')}"
+        >
+        <div 
+          *ngIf="isFieldInvalid('dateFin')" 
+          class="error-message"
+        >
+          {{ getErrorMessage('dateFin') }}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="statut">Statut</label>
+      <select 
+        id="statut" 
+        formControlName="statut"
+      >
+        <option 
+          *ngFor="let status of statusOptions" 
+          [value]="status.value"
+        >
+          {{ status.label }}
+        </option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Membres du Projet</label>
+      <div class="membres-list">
+        <div 
+          *ngFor="let user of utilisateurs" 
+          class="membre-item"
+        >
+          <input 
+            type="checkbox" 
+            [id]="'membre-' + user.id"
+            [checked]="projectForm.get('membres')?.value.includes(user.id)"
+            (change)="toggleMember(user.id)"
+          >
+          <label [for]="'membre-' + user.id">
+            {{ user.nom }} {{ user.prenom }}
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button 
+        type="submit" 
+        class="btn-primary"
+      >
+        {{ isEditMode ? 'Mettre à Jour' : 'Créer Projet' }}
+      </button>
+      <button 
+        type="button" 
+        class="btn-secondary" 
+        (click)="onCancel()"
+      >
+        Annuler
+      </button>
+    </div>
+  </form>
+</div>

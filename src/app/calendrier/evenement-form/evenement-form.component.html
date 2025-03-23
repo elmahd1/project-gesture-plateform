@@ -1,0 +1,108 @@
+<div class="event-form-container">
+    <div class="form-header">
+      <h2>{{ isEditing ? 'Modifier l\'événement' : 'Nouvel événement' }}</h2>
+      <p>{{ isEditing ? 'Mettez à jour les détails de l\'événement' : 'Créez un nouvel événement dans le calendrier' }}</p>
+    </div>
+    
+    <div *ngIf="isLoading" class="loading-indicator">
+      <div class="spinner"></div>
+      <span>Chargement...</span>
+    </div>
+    
+    <div *ngIf="error" class="error-message">
+      <i class="fas fa-exclamation-triangle"></i>
+      <span>{{ error }}</span>
+    </div>
+    
+    <form *ngIf="!isLoading" [formGroup]="evenementForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="titre">Titre*</label>
+        <input 
+          type="text" 
+          id="titre" 
+          formControlName="titre" 
+          placeholder="Titre de l'événement"
+          [class.invalid]="evenementForm.get('titre')?.invalid && evenementForm.get('titre')?.touched"
+        >
+        <div class="error-hint" *ngIf="evenementForm.get('titre')?.invalid && evenementForm.get('titre')?.touched">
+          Le titre est requis
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea 
+          id="description" 
+          formControlName="description" 
+          placeholder="Description de l'événement" 
+          rows="3"
+        ></textarea>
+      </div>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="dateDebut">Date de début*</label>
+          <input 
+            type="datetime-local" 
+            id="dateDebut" 
+            formControlName="dateDebut"
+            [class.invalid]="evenementForm.get('dateDebut')?.invalid && evenementForm.get('dateDebut')?.touched"
+          >
+          <div class="error-hint" *ngIf="evenementForm.get('dateDebut')?.invalid && evenementForm.get('dateDebut')?.touched">
+            La date de début est requise
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="dateFin">Date de fin*</label>
+          <input 
+            type="datetime-local" 
+            id="dateFin" 
+            formControlName="dateFin"
+            [class.invalid]="evenementForm.get('dateFin')?.invalid && evenementForm.get('dateFin')?.touched"
+          >
+          <div class="error-hint" *ngIf="evenementForm.get('dateFin')?.invalid && evenementForm.get('dateFin')?.touched">
+            La date de fin est requise
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="type">Type d'événement*</label>
+        <select 
+          id="type" 
+          formControlName="type"
+          [class.invalid]="evenementForm.get('type')?.invalid && evenementForm.get('type')?.touched"
+        >
+          <option *ngFor="let option of typeOptions" [value]="option.value">{{ option.label }}</option>
+        </select>
+        <div class="error-hint" *ngIf="evenementForm.get('type')?.invalid && evenementForm.get('type')?.touched">
+          Le type d'événement est requis
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="participants">Participants</label>
+        <select 
+          id="participants" 
+          formControlName="participants" 
+          multiple
+        >
+          <option *ngFor="let user of users" [value]="user.id">{{ user.prenom }} {{ user.nom }}</option>
+        </select>
+        <div class="field-hint">Maintenez la touche Ctrl (ou Cmd) pour sélectionner plusieurs participants</div>
+      </div>
+      
+      <div class="form-actions">
+        <button type="button" class="cancel-btn" (click)="cancel()">Annuler</button>
+        <button 
+          type="submit" 
+          class="submit-btn" 
+          [disabled]="evenementForm.invalid || isSubmitting"
+        >
+          <span *ngIf="isSubmitting" class="spinner-small"></span>
+          {{ isEditing ? 'Mettre à jour' : 'Créer' }}
+        </button>
+      </div>
+    </form>
+  </div>

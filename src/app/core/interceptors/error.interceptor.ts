@@ -1,19 +1,21 @@
-import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn } from '@angular/common/http';
+import { catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 import { inject } from '@angular/core';
-import { catchError, throwError } from 'rxjs';
-import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
-  const authService = inject(AuthService);
-  
+  const router = inject(Router);
+
   return next(req).pipe(
-    catchError((error: HttpErrorResponse) => {
+    catchError(error => {
       if (error.status === 401) {
-        // Déconnexion automatique si réponse 401 reçue de l'API
-        authService.logout();
+        // Unauthorized - redirect to login
+        localStorage.removeItem('auth_token');
+        router.navigate(['/auth/login']);
       }
       
-      const errorMessage = error.error?.message || error.statusText;
+      const errorMessage = error.error?.message || error.statusText || 'Unknown error';
       console.error('API Error:', errorMessage);
       
       return throwError(() => new Error(errorMessage));
