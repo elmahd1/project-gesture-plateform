@@ -81,7 +81,7 @@ interface TeamMember {
               </span>
             </div>
             <div class="member-actions">
-              <button (click)="changeRole(member)">
+              <button>
                 Changer de rôle
               </button>
               <button 

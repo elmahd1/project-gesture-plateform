@@ -8,28 +8,22 @@ export const routes: Routes = [
     loadComponent: () => import('./landing-page/landing-page.component').then(m => m.LandingPageComponent)
   },
   
-  // Auth routes - using auth layout
-  {
-    path: '',
-    loadComponent: () => import("C:\\Users\\DELL\\Documents\\Workflow Frontend\\workflow\\src\\layouts\\auth-layout\\auth-layout.component").then(m => m.AuthLayoutComponent),
-    children: [
-      {
-        path: 'login',
-        loadComponent: () => import('./auth/login/login.component').then(m => m.LoginComponent)
-      },
-      {
-        path: 'register',
-        loadComponent: () => import('./auth/register/register.component').then(m => m.RegisterComponent)
-      },
-      {
-        path: 'forgot-password',
-        loadComponent: () => import('./auth/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent)
-      },
-      {
-        path: 'reset-password',
-        loadComponent: () => import('./auth/reset-password/reset-password.component').then(m => m.ResetPasswordComponent)
-      }
-    ]
+   // Auth routes
+   { 
+    path: 'login', 
+    loadComponent: () => import('./auth/login/login.component').then(c => c.LoginComponent) 
+  },
+  { 
+    path: 'register', 
+    loadComponent: () => import('./auth/register/register.component').then(c => c.RegisterComponent) 
+  },
+  { 
+    path: 'forgot-password', 
+    loadComponent: () => import('./auth/forgot-password/forgot-password.component').then(c => c.ForgotPasswordComponent) 
+  },
+  { 
+    path: 'reset-password', 
+    loadComponent: () => import('./auth/reset-password/reset-password.component').then(c => c.ResetPasswordComponent) 
   },
   
   // Dashboard and app routes - using main layout

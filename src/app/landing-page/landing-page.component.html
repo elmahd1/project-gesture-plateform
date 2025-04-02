@@ -11,8 +11,10 @@
         <a href="#how-it-works">Comment ça marche</a>
         <a href="#testimonials">Témoignages</a>
         <a href="#contact">Contact</a>
-        <button class="login-btn" routerLink="/auth/login">Connexion</button>
-        <button class="signup-btn" routerLink="/auth/register">Démarrer</button>
+<div class="hero-buttons">
+  <a routerLink="/login" class="btn btn-primary">Login</a>
+  <a routerLink="/register" class="btn btn-secondary">Register</a>
+</div>
       </div>
       <div class="mobile-menu-btn" (click)="toggleMobileMenu()">
         <span></span>
