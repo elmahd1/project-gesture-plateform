@@ -85,4 +85,9 @@ public class ProjetService {
             projetRepository.save(projet);
         }
     }
+
+    public Projet update(int id, Projet projet) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'update'");
+    }
 }

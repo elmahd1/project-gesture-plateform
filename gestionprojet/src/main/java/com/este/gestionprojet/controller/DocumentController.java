@@ -1,7 +1,9 @@
 package com.este.gestionprojet.controller;
 
 import com.este.gestionprojet.model.entity.Document;
+import com.este.gestionprojet.model.entity.Utilisateur;
 import com.este.gestionprojet.service.DocumentService;
+import com.este.gestionprojet.service.UtilisateurService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,11 +13,15 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/documents")
+@CrossOrigin(origins = "http://localhost:4200")
 public class DocumentController {
 
     @Autowired
     private DocumentService documentService;
+    @Autowired
+    private UtilisateurService utilisateurService;
 
+    // GET: Fetch all documents
     // GET: Fetch all documents
     @GetMapping
     public ResponseEntity<List<Document>> getAllDocuments() {

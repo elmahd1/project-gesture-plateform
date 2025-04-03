@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/taches")
+@RequestMapping("/api/tasks")
+@CrossOrigin(origins = "http://localhost:4200")
 public class TacheController {
 
     @Autowired

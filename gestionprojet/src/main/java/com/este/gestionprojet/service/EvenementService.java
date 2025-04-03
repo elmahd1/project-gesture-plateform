@@ -36,8 +36,8 @@ public class EvenementService {
         return evenementRepository.findByCalendrierId(calendrierId);
     }
 
-    public List<Evenement> findByDate(Date date) {
-        return evenementRepository.findByDate(date);
+    public List<Evenement> findByDate(Date dateDebut) {
+        return evenementRepository.findByDateDebut(dateDebut);
     }
 
     public void ajouterParticipant(int evenementId, Utilisateur participant) {

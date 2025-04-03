@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/utilisateurs")
+@RequestMapping("/api/users")
+@CrossOrigin(origins = "http://localhost:4200")
 public class UtilisateurController {
 
     @Autowired
@@ -23,7 +24,7 @@ public class UtilisateurController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Utilisateur> getUtilisateurById(@PathVariable Long id) {
+    public ResponseEntity<Utilisateur> getUtilisateurById(@PathVariable int id) {
         Optional<Utilisateur> utilisateur = utilisateurService.findById(id);
         return utilisateur.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
@@ -34,7 +35,7 @@ public class UtilisateurController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Utilisateur> updateUtilisateur(@PathVariable Long id, @RequestBody Utilisateur utilisateurDetails) {
+    public ResponseEntity<Utilisateur> updateUtilisateur(@PathVariable int id, @RequestBody Utilisateur utilisateurDetails) {
         Optional<Utilisateur> utilisateur = utilisateurService.findById(id);
         if (utilisateur.isPresent()) {
             Utilisateur updatedUtilisateur = utilisateur.get();
@@ -51,7 +52,7 @@ public class UtilisateurController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUtilisateur(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUtilisateur(@PathVariable int id) {
         Optional<Utilisateur> utilisateur = utilisateurService.findById(id);
         if (utilisateur.isPresent()) {
             utilisateurService.deleteById(id);
@@ -62,13 +63,13 @@ public class UtilisateurController {
     }
 
     @PostMapping("/{id}/assigner-tache")
-    public ResponseEntity<Void> assignerTache(@PathVariable Long id, @RequestBody Tache tache) {
+    public ResponseEntity<Void> assignerTache(@PathVariable int id, @RequestBody Tache tache) {
         utilisateurService.assignerTache(id, tache);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{id}/creer-commentaire")
-    public ResponseEntity<Void> creerCommentaire(@PathVariable Long id, @RequestBody Tache tache, @RequestParam String commentaire) {
+    public ResponseEntity<Void> creerCommentaire(@PathVariable int id, @RequestBody Tache tache, @RequestParam String commentaire) {
         utilisateurService.creerCommentaire(id, tache, commentaire);
         return ResponseEntity.ok().build();
     }

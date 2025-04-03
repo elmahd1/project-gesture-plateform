@@ -19,7 +19,7 @@ public class UtilisateurService {
         return utilisateurRepository.findAll();
     }
 
-    public Optional<Utilisateur> findById(Long id) {
+    public Optional<Utilisateur> findById(int id) {
         return utilisateurRepository.findById(id);
     }
 
@@ -27,11 +27,11 @@ public class UtilisateurService {
         return utilisateurRepository.save(utilisateur);
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(int id) {
         utilisateurRepository.deleteById(id);
     }
 
-    public void assignerTache(Long utilisateurId, Tache tache) {
+    public void assignerTache(int utilisateurId, Tache tache) {
         Optional<Utilisateur> utilisateurOpt = utilisateurRepository.findById(utilisateurId);
         if (utilisateurOpt.isPresent()) {
             Utilisateur utilisateur = utilisateurOpt.get();
@@ -40,7 +40,7 @@ public class UtilisateurService {
         }
     }
 
-    public void creerCommentaire(Long utilisateurId, Tache tache, String commentaire) {
+    public void creerCommentaire(int utilisateurId, Tache tache, String commentaire) {
         Optional<Utilisateur> utilisateurOpt = utilisateurRepository.findById(utilisateurId);
         if (utilisateurOpt.isPresent()) {
             Utilisateur utilisateur = utilisateurOpt.get();

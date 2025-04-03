@@ -12,6 +12,6 @@ public interface EvenementRepo extends JpaRepository<Evenement, Integer> {
 
     List<Evenement> findByCalendrierId(int calendrierId);
 
-    List<Evenement> findByDate(Date date);
+    List<Evenement> findByDateDebut(Date dateDebut);
     
 }
