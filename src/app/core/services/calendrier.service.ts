@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { Calendrier } from '../models/calendrier.model';
 import { Evenement } from '../models/evenement.model';
@@ -10,7 +11,7 @@ import { Evenement } from '../models/evenement.model';
 export class CalendrierService {
   private endpoint = 'calendriers';
 
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService) {}
 
   /**
    * Get all calendars
@@ -64,9 +65,17 @@ export class CalendrierService {
    * @returns Observable of Evenement array
    */
   getEvenementsForDate(id: number, date: Date): Observable<Evenement[]> {
+    const formattedDate = date.toISOString().split('T')[0];
     return this.apiService.get<Evenement[]>(`${this.endpoint}/${id}/evenements`, {
-      date: date.toISOString().split('T')[0]
-    });
+      date: formattedDate
+    })
+    .pipe(
+      map(evenements => evenements.map(evenement => ({
+        ...evenement,
+        dateDebut: evenement.dateDebut ? new Date(evenement.dateDebut) : evenement.dateDebut,
+        dateFin: evenement.dateFin ? new Date(evenement.dateFin) : evenement.dateFin
+      })))
+    );
   }
 
   /**
@@ -76,7 +85,14 @@ export class CalendrierService {
    * @returns Observable of created Evenement
    */
   addEvenement(id: number, evenement: Evenement): Observable<Evenement> {
-    return this.apiService.post<Evenement>(`${this.endpoint}/${id}/evenements`, evenement);
+    return this.apiService.post<Evenement>(`${this.endpoint}/${id}/evenements`, evenement)
+      .pipe(
+        map(evenement => ({
+          ...evenement,
+          dateDebut: evenement.dateDebut ? new Date(evenement.dateDebut) : evenement.dateDebut,
+          dateFin: evenement.dateFin ? new Date(evenement.dateFin) : evenement.dateFin
+        }))
+      );
   }
 
   /**

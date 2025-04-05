@@ -1,8 +1,7 @@
-// src/app/auth/login/login.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
@@ -17,7 +16,7 @@ import { AuthService } from '../../core/services/auth.service';
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-  loginForm!: FormGroup;
+  loginForm: FormGroup;
   loading = false;
   submitted = false;
   error = '';
@@ -27,7 +26,14 @@ export class LoginComponent implements OnInit {
     private formBuilder: FormBuilder,
     private router: Router,
     private authService: AuthService
-  ) { }
+  ) { 
+    // Initialize the form in the constructor
+    this.loginForm = this.formBuilder.group({
+      email: new FormControl('', [Validators.required, Validators.email]),
+      password: new FormControl('', Validators.required),
+      rememberMe: new FormControl(false)
+    });
+  }
 
   ngOnInit(): void {
     // Redirect to dashboard if already logged in
@@ -35,12 +41,6 @@ export class LoginComponent implements OnInit {
       this.router.navigate(['/dashboard']);
       return;
     }
-
-    this.loginForm = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
-      rememberMe: [false]
-    });
   }
 
   // Getter for easy access to form fields

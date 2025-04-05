@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { Notification } from '../models/notification.model';
 
@@ -9,14 +10,17 @@ import { Notification } from '../models/notification.model';
 export class NotificationService {
   private endpoint = 'notifications';
 
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService) {}
 
   /**
    * Get all notifications for current user
    * @returns Observable of Notification array
    */
   getUserNotifications(): Observable<Notification[]> {
-    return this.apiService.get<Notification[]>(`${this.endpoint}/user`);
+    return this.apiService.get<Notification[]>(`${this.endpoint}/user`)
+      .pipe(
+        map(notifications => this.convertDateFields(notifications))
+      );
   }
 
   /**
@@ -25,7 +29,10 @@ export class NotificationService {
    * @returns Observable of Notification
    */
   getNotificationById(id: number): Observable<Notification> {
-    return this.apiService.get<Notification>(`${this.endpoint}/${id}`);
+    return this.apiService.get<Notification>(`${this.endpoint}/${id}`)
+      .pipe(
+        map(notification => this.convertDateFields([notification])[0])
+      );
   }
 
   /**
@@ -34,7 +41,10 @@ export class NotificationService {
    * @returns Observable of updated Notification
    */
   markAsRead(id: number): Observable<Notification> {
-    return this.apiService.put<Notification>(`${this.endpoint}/${id}/read`, {});
+    return this.apiService.put<Notification>(`${this.endpoint}/${id}/read`, {})
+      .pipe(
+        map(notification => this.convertDateFields([notification])[0])
+      );
   }
 
   /**
@@ -68,5 +78,15 @@ export class NotificationService {
    */
   getUnreadCount(): Observable<number> {
     return this.apiService.get<number>(`${this.endpoint}/unread-count`);
+  }
+
+  /**
+   * Helper method to convert string dates to Date objects
+   */
+  private convertDateFields(notifications: Notification[]): Notification[] {
+    return notifications.map(notification => ({
+      ...notification,
+      dateCreation: notification.dateCreation ? new Date(notification.dateCreation) : notification.dateCreation
+    }));
   }
 }

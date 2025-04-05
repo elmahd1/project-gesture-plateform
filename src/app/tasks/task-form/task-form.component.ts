@@ -357,8 +357,9 @@ export class TaskFormComponent implements OnInit {
       next: (task) => {
         this.taskForm.patchValue({
           ...task,
+          // Safely handle potentially undefined projet and assignes
           projet: task.projet?.id,
-          assignes: task.assignes.map(a => a.id)
+          assignes: task.assignes ? task.assignes.map(a => a.id) : []
         });
       },
       error: (error) => {
@@ -367,17 +368,19 @@ export class TaskFormComponent implements OnInit {
     });
   }
 
-  toggleAssignee(userId: number): void {
+  toggleAssignee(userId: number | undefined): void {
+    if (userId === undefined) return;
+  
     const assignesControl = this.taskForm.get('assignes');
     const currentAssignees = assignesControl?.value || [];
     const index = currentAssignees.indexOf(userId);
-
+  
     if (index > -1) {
       currentAssignees.splice(index, 1);
     } else {
       currentAssignees.push(userId);
     }
-
+  
     assignesControl?.setValue(currentAssignees);
   }
 
@@ -386,14 +389,13 @@ export class TaskFormComponent implements OnInit {
       this.markFormGroupTouched(this.taskForm);
       return;
     }
-
     const taskData: Tache = {
       ...this.taskForm.value,
       id: this.taskId || 0,
       projet: this.taskForm.value.projet 
         ? { id: this.taskForm.value.projet } as Projet 
         : undefined,
-      assignes: this.taskForm.value.assignes.map((id: number) => ({ id } as Utilisateur))
+      assignes: (this.taskForm.value.assignes || []).map((id: number) => ({ id } as Utilisateur))
     };
 
     if (this.isEditMode) {

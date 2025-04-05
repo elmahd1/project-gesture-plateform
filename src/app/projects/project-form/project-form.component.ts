@@ -82,7 +82,8 @@ export class ProjectFormComponent implements OnInit {
       next: (project) => {
         this.projectForm.patchValue({
           ...project,
-          membres: project.membres.map(m => m.id)
+          // Safely handle potentially undefined membres
+          membres: project.membres ? project.membres.map(m => m.id) : []
         });
       },
       error: (error) => {
@@ -96,15 +97,19 @@ export class ProjectFormComponent implements OnInit {
       this.markFormGroupTouched(this.projectForm);
       return;
     }
-
+  
     const projectData: Projet = {
       ...this.projectForm.value,
       id: this.projectId || 0,
-      membres: this.projectForm.value.membres.map((id: number) => ({ id } as Utilisateur)),
+      // Safely handle membres
+      membres: this.projectForm.value.membres 
+        ? this.projectForm.value.membres.map((id: number) => ({ id } as Utilisateur)) 
+        : [],
       taches: [],
       documents: [],
       risques: []
     };
+  
 
     if (this.isEditMode) {
       this.projetService.updateProject(this.projectId!, projectData).subscribe({
@@ -135,11 +140,13 @@ export class ProjectFormComponent implements OnInit {
   }
 
   // Method for handling member selection
-  toggleMember(userId: number): void {
-    const membresControl = this.projectForm.get('membres') as FormControl;
-    const currentMembers = membresControl.value || [];
+  toggleMember(userId: number | undefined): void {
+    if (userId === undefined) return;
+  
+    const membresControl = this.projectForm.get('membres');
+    const currentMembers = membresControl?.value || [];
     const index = currentMembers.indexOf(userId);
-
+  
     if (index > -1) {
       // Remove member if already exists
       currentMembers.splice(index, 1);
@@ -147,8 +154,8 @@ export class ProjectFormComponent implements OnInit {
       // Add member
       currentMembers.push(userId);
     }
-
-    membresControl.setValue(currentMembers);
+  
+    membresControl?.setValue(currentMembers);
   }
 
   // Validation helper methods

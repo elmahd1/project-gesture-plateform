@@ -6,8 +6,8 @@ export interface Document {
   id?: number;
   nom: string;
   cheminFichier: string;
-  dateCreation: Date;
-  dateDerniereModification: Date;
+  dateCreation: Date | string;
+  dateDerniereModification: Date | string;
   createur: Utilisateur;
   type: TypeDocument;
   projet?: Projet;

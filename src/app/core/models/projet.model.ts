@@ -1,27 +1,28 @@
-import { Utilisateur } from './utilisateur.model';
+import { Statut } from './enums';
 import { Tache } from './tache.model';
-// import { Ressource } from './ressource.model';
+import { Utilisateur } from './utilisateur.model';
 import { Document } from './document.model';
 import { Risque } from './risque.model';
 
 export interface Projet {
-  id: number;
+  id?: number;
   nom: string;
   description: string;
-  dateDebut: Date;
-  dateFin: Date;
-  statut: 'PLANNING' | 'IN_PROGRESS' | 'ON_HOLD' | 'COMPLETED' | 'CANCELLED';
-  taches: Tache[];
-  membres: Utilisateur[];
-  // ressources: Ressource[];
-  documents: Document[];
-  risques: Risque[];
+  dateDebut: Date | string;
+  dateFin: Date | string;
+  statut: Statut;
+  taches?: Tache[];
+  membres?: Utilisateur[];
+  documents?: Document[];
+  risques?: Risque[];
   
-  // For compatibility with existing code
-  status?: 'PLANNING' | 'IN_PROGRESS' | 'ON_HOLD' | 'COMPLETED' | 'CANCELLED';
+  // For UI purposes and backward compatibility
+  status?: string;
   progress?: number;
-  startDate?: Date;
-  dueDate?: Date;
+  progression?: number;
+  createdById?: number;
+  updatedAt?: Date | string;
   owner?: Utilisateur;
-  updatedAt?: Date;
+  startDate?: Date | string;
+  dueDate?: Date | string;
 }

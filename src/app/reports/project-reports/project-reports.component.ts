@@ -106,13 +106,13 @@ export class ProjectReportsComponent implements OnInit {
     const reportData = this.filteredProjects.map(project => ({
       Nom: project.nom,
       Statut: this.getStatusLabel(project.statut),
-      'Date de Début': project.dateDebut.toLocaleDateString(),
-      'Date de Fin': project.dateFin.toLocaleDateString(),
-      Progression: `${project.progress}%`
+      'Date de Début': new Date(project.dateDebut).toLocaleDateString(),
+      'Date de Fin': new Date(project.dateFin).toLocaleDateString(),
+      Progression: `${project.progress || 0}%`
     }));
-
+  
     this.reportService.generatePDF(
-      'Rapport des Projets', 
+      'Rapport des Projets',
       ['Nom', 'Statut', 'Date de Début', 'Date de Fin', 'Progression'],
       reportData
     );

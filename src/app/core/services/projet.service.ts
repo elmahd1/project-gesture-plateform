@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { Projet } from '../models/projet.model';
+import { Tache } from '../models/tache.model';
+import { Utilisateur } from '../models/utilisateur.model';
 
 @Injectable({
   providedIn: 'root'
@@ -9,14 +12,17 @@ import { Projet } from '../models/projet.model';
 export class ProjetService {
   private endpoint = 'projets';
 
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService) {}
 
   /**
    * Get all projects
    * @returns Observable of Projet array
    */
   getProjects(): Observable<Projet[]> {
-    return this.apiService.get<Projet[]>(this.endpoint);
+    return this.apiService.get<Projet[]>(this.endpoint)
+      .pipe(
+        map(projets => this.convertDateFields(projets))
+      );
   }
 
   /**
@@ -25,7 +31,10 @@ export class ProjetService {
    * @returns Observable of Projet
    */
   getProjectById(id: number): Observable<Projet> {
-    return this.apiService.get<Projet>(`${this.endpoint}/${id}`);
+    return this.apiService.get<Projet>(`${this.endpoint}/${id}`)
+      .pipe(
+        map(projet => this.convertDateFields([projet])[0])
+      );
   }
 
   /**
@@ -34,7 +43,10 @@ export class ProjetService {
    * @returns Observable of created Projet
    */
   createProject(projet: Projet): Observable<Projet> {
-    return this.apiService.post<Projet>(this.endpoint, projet);
+    return this.apiService.post<Projet>(this.endpoint, projet)
+      .pipe(
+        map(projet => this.convertDateFields([projet])[0])
+      );
   }
 
   /**
@@ -44,7 +56,10 @@ export class ProjetService {
    * @returns Observable of updated Projet
    */
   updateProject(id: number, projet: Partial<Projet>): Observable<Projet> {
-    return this.apiService.put<Projet>(`${this.endpoint}/${id}`, projet);
+    return this.apiService.put<Projet>(`${this.endpoint}/${id}`, projet)
+      .pipe(
+        map(projet => this.convertDateFields([projet])[0])
+      );
   }
 
   /**
@@ -61,8 +76,17 @@ export class ProjetService {
    * @param id Project ID
    * @returns Observable of tasks for the project
    */
-  getProjectTasks(id: number): Observable<any[]> {
-    return this.apiService.get<any[]>(`${this.endpoint}/${id}/taches`);
+  getProjectTasks(id: number): Observable<Tache[]> {
+    return this.apiService.get<Tache[]>(`${this.endpoint}/${id}/taches`)
+      .pipe(
+        map(taches => taches.map(tache => ({
+          ...tache,
+          dateDebut: tache.dateDebut ? new Date(tache.dateDebut) : tache.dateDebut,
+          dateFin: tache.dateFin ? new Date(tache.dateFin) : tache.dateFin,
+          // Ensure backward compatibility
+          datefin: tache.dateFin
+        })))
+      );
   }
 
   /**
@@ -70,8 +94,8 @@ export class ProjetService {
    * @param id Project ID
    * @returns Observable of members for the project
    */
-  getProjectMembers(id: number): Observable<any[]> {
-    return this.apiService.get<any[]>(`${this.endpoint}/${id}/membres`);
+  getProjectMembers(id: number): Observable<Utilisateur[]> {
+    return this.apiService.get<Utilisateur[]>(`${this.endpoint}/${id}/membres`);
   }
 
   /**
@@ -95,22 +119,32 @@ export class ProjetService {
   }
 
   /**
-   * Update project progress
-   * @param id Project ID
-   * @param progress Progress percentage (0-100)
-   * @returns Observable of updated Projet
-   */
-  updateProjectProgress(id: number, progress: number): Observable<Projet> {
-    return this.apiService.put<Projet>(`${this.endpoint}/${id}/progress`, { progress });
-  }
-
-  /**
-   * Change project status
+   * Update project status
    * @param id Project ID
    * @param status New status
    * @returns Observable of updated Projet
    */
   updateProjectStatus(id: number, status: string): Observable<Projet> {
-    return this.apiService.put<Projet>(`${this.endpoint}/${id}/status`, { status });
+    return this.apiService.put<Projet>(`${this.endpoint}/${id}/statut`, { statut: status })
+      .pipe(
+        map(projet => this.convertDateFields([projet])[0])
+      );
+  }
+
+  /**
+   * Helper method to convert string dates to Date objects and ensure backward compatibility
+   */
+  private convertDateFields(projets: Projet[]): Projet[] {
+    return projets.map(projet => ({
+      ...projet,
+      dateDebut: projet.dateDebut ? new Date(projet.dateDebut) : projet.dateDebut,
+      dateFin: projet.dateFin ? new Date(projet.dateFin) : projet.dateFin,
+      updatedAt: projet.updatedAt ? new Date(projet.updatedAt) : projet.updatedAt,
+      // Ensure backward compatibility
+      status: projet.statut,
+      progress: projet.progression,
+      startDate: projet.dateDebut,
+      dueDate: projet.dateFin
+    }));
   }
 }

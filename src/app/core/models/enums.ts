@@ -1,9 +1,7 @@
-// Enums matching the backend
-export enum Priorite {
-  FAIBLE = 'FAIBLE',
-  MOYENNE = 'MOYENNE',
-  ELEVEE = 'ELEVEE',
-  URGENTE = 'URGENTE'
+export enum Role {
+  ADMIN = 'ADMIN',
+  CHEF_PROJET = 'CHEF_PROJET',
+  MEMBRE = 'MEMBRE'
 }
 
 export enum Statut {
@@ -14,10 +12,11 @@ export enum Statut {
   ANNULE = 'ANNULE'
 }
 
-export enum Role {
-  ADMIN = 'ADMIN',
-  CHEF_PROJET = 'CHEF_PROJET',
-  MEMBRE = 'MEMBRE'
+export enum Priorite {
+  FAIBLE = 'FAIBLE',
+  MOYENNE = 'MOYENNE',
+  ELEVEE = 'ELEVEE',
+  URGENTE = 'URGENTE'
 }
 
 export enum TypeRessource {
@@ -25,13 +24,6 @@ export enum TypeRessource {
   MATERIELLE = 'MATERIELLE',
   FINANCIERE = 'FINANCIERE',
   LOGICIELLE = 'LOGICIELLE'
-}
-
-export enum FormatRapport {
-  PDF = 'PDF',
-  EXCEL = 'EXCEL',
-  HTML = 'HTML',
-  JSON = 'JSON'
 }
 
 export enum TypeDocument {
@@ -62,4 +54,11 @@ export enum NiveauImpact {
   MOYEN = 'MOYEN',
   ELEVE = 'ELEVE',
   CRITIQUE = 'CRITIQUE'
+}
+
+export enum FormatRapport {
+  PDF = 'PDF',
+  EXCEL = 'EXCEL',
+  HTML = 'HTML',
+  JSON = 'JSON'
 }

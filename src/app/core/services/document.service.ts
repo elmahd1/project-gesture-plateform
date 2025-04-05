@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { Document } from '../models/document.model';
 
@@ -9,14 +10,17 @@ import { Document } from '../models/document.model';
 export class DocumentService {
   private endpoint = 'documents';
 
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService) {}
 
   /**
    * Get all documents
    * @returns Observable of Document array
    */
   getAllDocuments(): Observable<Document[]> {
-    return this.apiService.get<Document[]>(this.endpoint);
+    return this.apiService.get<Document[]>(this.endpoint)
+      .pipe(
+        map(documents => this.convertDateFields(documents))
+      );
   }
 
   /**
@@ -25,7 +29,10 @@ export class DocumentService {
    * @returns Observable of Document
    */
   getDocumentById(id: number): Observable<Document> {
-    return this.apiService.get<Document>(`${this.endpoint}/${id}`);
+    return this.apiService.get<Document>(`${this.endpoint}/${id}`)
+      .pipe(
+        map(document => this.convertDateFields([document])[0])
+      );
   }
 
   /**
@@ -34,7 +41,10 @@ export class DocumentService {
    * @returns Observable of created Document
    */
   createDocument(document: Document): Observable<Document> {
-    return this.apiService.post<Document>(this.endpoint, document);
+    return this.apiService.post<Document>(this.endpoint, document)
+      .pipe(
+        map(document => this.convertDateFields([document])[0])
+      );
   }
 
   /**
@@ -44,7 +54,10 @@ export class DocumentService {
    * @returns Observable of updated Document
    */
   updateDocument(id: number, document: Document): Observable<Document> {
-    return this.apiService.put<Document>(`${this.endpoint}/${id}`, document);
+    return this.apiService.put<Document>(`${this.endpoint}/${id}`, document)
+      .pipe(
+        map(document => this.convertDateFields([document])[0])
+      );
   }
 
   /**
@@ -62,7 +75,10 @@ export class DocumentService {
    * @returns Observable of Document array
    */
   getDocumentsByProjet(projetId: number): Observable<Document[]> {
-    return this.apiService.get<Document[]>(`${this.endpoint}/projet/${projetId}`);
+    return this.apiService.get<Document[]>(`${this.endpoint}/projet/${projetId}`)
+      .pipe(
+        map(documents => this.convertDateFields(documents))
+      );
   }
 
   /**
@@ -72,11 +88,10 @@ export class DocumentService {
    * @returns Observable of created Document
    */
   uploadDocument(file: File, documentMetadata: any): Observable<Document> {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('metadata', JSON.stringify(documentMetadata));
-    
-    return this.apiService.post<Document>(`${this.endpoint}/upload`, formData);
+    return this.apiService.uploadFile<Document>(`${this.endpoint}/upload`, file, documentMetadata)
+      .pipe(
+        map(document => this.convertDateFields([document])[0])
+      );
   }
 
   /**
@@ -85,8 +100,18 @@ export class DocumentService {
    * @returns Observable of Blob
    */
   downloadDocument(id: number): Observable<Blob> {
-    return this.apiService.get<Blob>(`${this.endpoint}/${id}/download`, {
-      responseType: 'blob' as 'json'
-    });
+    return this.apiService.downloadFile(`${this.endpoint}/${id}/download`);
+  }
+
+  /**
+   * Helper method to convert string dates to Date objects
+   */
+  private convertDateFields(documents: Document[]): Document[] {
+    return documents.map(document => ({
+      ...document,
+      dateCreation: document.dateCreation ? new Date(document.dateCreation) : document.dateCreation,
+      dateDerniereModification: document.dateDerniereModification ? 
+        new Date(document.dateDerniereModification) : document.dateDerniereModification
+    }));
   }
 }

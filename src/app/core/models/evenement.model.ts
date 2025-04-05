@@ -6,8 +6,8 @@ export interface Evenement {
   id?: number;
   titre: string;
   description: string;
-  dateDebut: Date;
-  dateFin: Date;
+  dateDebut: Date | string;
+  dateFin: Date | string;
   participants?: Utilisateur[];
   type: TypeEvenement;
   calendrier?: Calendrier;

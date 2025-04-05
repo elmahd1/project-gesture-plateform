@@ -1,24 +1,26 @@
-import { HttpInterceptorFn } from '@angular/common/http';
-import { catchError } from 'rxjs/operators';
-import { throwError } from 'rxjs';
+import { HttpHandlerFn, HttpInterceptorFn, HttpRequest, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { catchError, throwError } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 
-export const errorInterceptor: HttpInterceptorFn = (req, next) => {
+export const errorInterceptor: HttpInterceptorFn = (req: HttpRequest<unknown>, next: HttpHandlerFn) => {
   const router = inject(Router);
-
+  const authService = inject(AuthService);
+  
   return next(req).pipe(
-    catchError(error => {
+    catchError((error: HttpErrorResponse) => {
       if (error.status === 401) {
-        // Unauthorized - redirect to login
-        localStorage.removeItem('auth_token');
-        router.navigate(['/auth/login']);
+        // Unauthorized - log the user out
+        authService.logout();
+        router.navigate(['/login']);
+      } else if (error.status === 403) {
+        // Forbidden - redirect to access denied page or dashboard
+        router.navigate(['/access-denied']);
       }
       
-      const errorMessage = error.error?.message || error.statusText || 'Unknown error';
-      console.error('API Error:', errorMessage);
-      
-      return throwError(() => new Error(errorMessage));
+      // Pass the error along
+      return throwError(() => error);
     })
   );
 };

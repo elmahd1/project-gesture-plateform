@@ -119,13 +119,13 @@ export class TaskReportsComponent implements OnInit {
       Titre: task.titre,
       Statut: this.getStatusLabel(task.statut),
       Priorité: this.getPriorityLabel(task.priorite),
-      'Date de Début': task.dateDebut.toLocaleDateString(),
-      'Date de Fin': task.dateFin.toLocaleDateString(),
-      Progression: `${task.progression}%`
+      'Date de Début': new Date(task.dateDebut).toLocaleDateString(),
+      'Date de Fin': new Date(task.dateFin).toLocaleDateString(),
+      Progression: `${task.progression || 0}%`
     }));
-
+  
     this.reportService.generatePDF(
-      'Rapport des Tâches', 
+      'Rapport des Tâches',
       ['Titre', 'Statut', 'Priorité', 'Date de Début', 'Date de Fin', 'Progression'],
       reportData
     );

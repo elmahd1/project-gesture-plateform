@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
 import { Risque } from '../models/risque.model';
-import { Statut } from '../models/enums';
+import { NiveauImpact, Statut } from '../models/enums';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +10,7 @@ import { Statut } from '../models/enums';
 export class RisqueService {
   private endpoint = 'risques';
 
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService) {}
 
   /**
    * Get all risks
@@ -83,12 +83,11 @@ export class RisqueService {
    */
   calculateScore(risque: Risque): number {
     // This is a frontend calculation that mimics the backend calculation
-    // We would need impact values to be defined here
-    const impactValues = {
-      'FAIBLE': 0.25,
-      'MOYEN': 0.5,
-      'ELEVE': 0.75,
-      'CRITIQUE': 1
+    const impactValues: Record<NiveauImpact, number> = {
+      [NiveauImpact.FAIBLE]: 0.25,
+      [NiveauImpact.MOYEN]: 0.5,
+      [NiveauImpact.ELEVE]: 0.75,
+      [NiveauImpact.CRITIQUE]: 1
     };
     
     return impactValues[risque.impact] * risque.probabilite;
